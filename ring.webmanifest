@@ -1,0 +1,1 @@
+{"name": "링의 순례길", "short_name": "링의 순례길", "start_url": "./ring.html", "display": "standalone", "background_color": "#fff7ee", "theme_color": "#ff9f6e", "icons": [{"src": "ring-icon-512.png", "sizes": "512x512", "type": "image/png"}, {"src": "ring-icon-180.png", "sizes": "180x180", "type": "image/png"}]}
