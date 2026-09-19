@@ -1,5 +1,5 @@
-const CACHE='pullup-v1';
-const CORE=['./pullup.html','./pullup.webmanifest','./pullup-icon-180.png','./pullup-icon-512.png'];
+const CACHE='dash-v3';
+const CORE=["./pullup.html", "./pullup.webmanifest", "./pullup-icon-180.png", "./ring.html", "./ring.webmanifest", "./ring-icon-180.png", "./app.html", "./app.webmanifest", "./app-icon-180.png"];
 self.addEventListener('install',e=>{ e.waitUntil(caches.open(CACHE).then(async c=>{ for(const u of CORE){ try{ await c.add(u); }catch(err){} } self.skipWaiting(); })); });
 self.addEventListener('activate',e=>{ e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())); });
 self.addEventListener('fetch',e=>{
@@ -9,7 +9,7 @@ self.addEventListener('fetch',e=>{
     e.respondWith(caches.open(CACHE).then(async c=>{ const hit=await c.match(req); if(hit) return hit; try{ const res=await fetch(req); if(res&&(res.ok||res.type==='opaque')) c.put(req,res.clone()); return res; }catch(err){ return hit||Response.error(); } }));
     return;
   }
-  if (url.origin===location.origin && /pullup/.test(url.pathname)){
-    e.respondWith(fetch(req).then(res=>{ if(res&&res.ok){ caches.open(CACHE).then(c=>c.put(req,res.clone())); } return res; }).catch(()=>caches.match(req).then(h=>h||caches.match('./pullup.html'))));
+  if (url.origin===location.origin){
+    e.respondWith(fetch(req).then(res=>{ if(res&&res.ok){ caches.open(CACHE).then(c=>c.put(req,res.clone())); } return res; }).catch(()=>caches.match(req)));
   }
 });

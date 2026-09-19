@@ -6,16 +6,17 @@
 <meta name="theme-color" content="#0b0f1e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="철봉 각성록">
+<meta name="apple-mobile-web-app-title" content="각성록">
 <link rel="apple-touch-icon" href="pullup-icon-180.png">
 <link rel="manifest" href="pullup.webmanifest">
-<title>철봉 각성록</title>
+<title>각성록</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+KR:wght@500;700;900&display=swap">
 </head>
 <body>
 <style>
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 img{max-width:100%}[hidden]{display:none!important}
+
 @font-face{font-family:"Galmuri11";src:url("https://cdn.jsdelivr.net/npm/galmuri@latest/dist/Galmuri11.woff2") format("woff2");font-display:swap}
 :root{
   --bg:#0b0f1e; --panel:#141a33; --panel2:#1c2447; --line:#3b4c8c; --hi:#7fa4ff; --ink:#f4f1e8; --muted:#a9b3d6; --faint:#5e6a99;
@@ -186,10 +187,20 @@ td.r{text-align:right;font-family:"Press Start 2P";font-size:10px;color:var(--cy
 @keyframes rise{0%{opacity:0;transform:translateY(10px)}25%{opacity:1;transform:translateY(-8px)}100%{opacity:0;transform:translateY(-60px)}}
 .sync{font-family:"Press Start 2P";font-size:7px;color:var(--faint);text-align:center;margin-top:20px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.exsw{display:flex;gap:10px;align-items:center;margin:0 0 14px}
+.exsw button{flex:1;background:#141a33;color:var(--muted);border:0;box-shadow:0 0 0 3px var(--line),4px 4px 0 3px #000;padding:10px 8px;font-family:"Galmuri11","Noto Sans KR",sans-serif;font-weight:900;font-size:16px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.exsw button .p8{font-family:"Press Start 2P",monospace;font-size:7px;color:var(--faint)}
+.exsw button.on{background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 0 0 3px #fff,4px 4px 0 3px #000}
+.exsw button.on .p8{color:#fff}
+.exsw button[data-ex=ring].on{background:linear-gradient(180deg,#e63946,#8f1d2c)}
+.exsw small{display:none}
+.cal .c.ring{background:#b8384e !important}
+.cal .c.both{background:linear-gradient(135deg,var(--accent) 50%,#b8384e 50%) !important}
 </style>
 
 <div class="wrap">
   <div class="sysbar"><span class="tag">SYSTEM</span><span class="cursor" id="sysMsg"></span></div>
+  <div class="exsw"><button data-ex="pull"><span class="p8">PULL-UP</span>턱걸이</button><button data-ex="ring"><span class="p8">RING DIPS</span>링딥스</button><small id="exNote"></small></div>
 
   <div class="win">
     <div class="ttl"><b>STATUS</b><span>상태창</span><small id="stMeta"></small></div>
@@ -201,10 +212,10 @@ td.r{text-align:right;font-family:"Press Start 2P";font-size:10px;color:var(--cy
         <div class="lbl"><span>EXP</span><span id="expTxt"></span></div>
         <div class="bar"><i id="expFill"></i></div>
         <div class="stats">
-          <div><span>근력 · 누적</span><b id="sTotal">0</b></div>
-          <div><span>폭발력 · 세트 최고</span><b id="sPR">0</b></div>
+          <div><span id="lblTotal">근력 · 누적</span><b id="sTotal">0</b></div>
+          <div><span id="lblPR">폭발력 · 세트 최고</span><b id="sPR">0</b></div>
           <div><span>의지 · 연속 주</span><b id="sStreak">0</b></div>
-          <div><span>지배력 · 영토</span><b id="sTerr">0</b></div>
+          <div><span>지배력 · 영토 (합계)</span><b id="sTerr">0</b></div>
         </div>
       </div>
     </div>
@@ -212,7 +223,7 @@ td.r{text-align:right;font-family:"Press Start 2P";font-size:10px;color:var(--cy
 
   <div class="win gold quest">
     <div class="ttl"><b>QUEST</b><span>일일 퀘스트</span><small id="todayLbl"></small></div>
-    <div class="q"><div class="qt">턱걸이 <em id="qTarget"></em>회 × <em id="qSets"></em>세트</div><div class="goal">목표 <input type="number" id="optTarget" min="1" max="60"> × <input type="number" id="optSets" min="1" max="10"></div></div>
+    <div class="q"><div class="qt"><span id="qName">턱걸이</span> <em id="qTarget"></em>회 × <em id="qSets"></em>세트</div><div class="goal">목표 <input type="number" id="optTarget" min="1" max="60"> × <input type="number" id="optSets" min="1" max="10"></div></div>
     <div class="bar" style="--c:var(--gold)"><i id="goalFill"></i></div>
     <div class="entry">
       <button class="step l" id="dec">-</button>
@@ -250,7 +261,7 @@ td.r{text-align:right;font-family:"Press Start 2P";font-size:10px;color:var(--cy
       <div>
         <div class="vow">
           <div class="vh">* 각성 서약 *</div>
-          <div class="vl">나 <input type="text" id="vowName" placeholder="이름" maxlength="10"> 은(는) <input type="date" id="vowDate"> 까지<br>한 세트 <input type="number" id="vowReps" min="1" max="60" placeholder="15"> 회를 해낸다.</div>
+          <div class="vl">나 <input type="text" id="vowName" placeholder="이름" maxlength="10"> 은(는) <input type="date" id="vowDate"> 까지<br><b id="vowEx">턱걸이</b> 한 세트 <input type="number" id="vowReps" min="1" max="60" placeholder="15"> 회를 해낸다.</div>
           <div class="vw"><span>이유 :</span><input type="text" id="vowWhy" placeholder="예) 여름에 등 넓은 사람이 되려고" maxlength="60"></div>
           <div class="vp" id="vowProg"></div>
         </div>
@@ -267,16 +278,13 @@ td.r{text-align:right;font-family:"Press Start 2P";font-size:10px;color:var(--cy
   </div>
 
   <div class="win">
-    <div class="ttl"><b>WHY</b><span>턱걸이를 하는 까닭</span></div>
-    <div class="whygrid">
-      <div class="w"><div class="rn">01</div><b>등의 넓이는 여기서 나온다</b><p>광배근을 가장 넓은 가동범위로 늘였다 당기는 운동. 등이 옆으로 퍼지는 "V자"는 로우가 아니라 수직 당기기가 만든다.</p></div>
-      <div class="w"><div class="rn">02</div><b>당기기 근력의 기준점</b><p>맨몸 턱걸이 횟수는 어디서든 통하는 상체 당기기 지표다. 군대·체력검정·운동선수 평가가 괜히 이걸 쓰는 게 아니다.</p></div>
-      <div class="w"><div class="rn">03</div><b>악력과 팔뚝이 같이 자란다</b><p>매달리는 것 자체가 악력 훈련. 악력은 전신 근력과 상관이 높고, 나이 들수록 가치가 커지는 능력이다.</p></div>
-      <div class="w"><div class="rn">04</div><b>어깨를 바로 세운다</b><p>견갑골을 아래로 끌어내리는 동작이 책상 앞에서 말린 어깨의 반대 방향이다. 딥스·푸시업 같은 밀기와 짝을 이뤄 균형을 잡는다.</p></div>
-      <div class="w"><div class="rn">05</div><b>5세트인 이유</b><p>근비대는 세트 수(볼륨)에 반응한다. 4세트에서 5세트로 올리면 주간 볼륨이 25% 늘고, 마지막 세트가 실패 근처에서 자극을 준다. 대신 세트 사이 2분은 꼭 쉰다.</p></div>
-      <div class="w"><div class="rn">06</div><b>철봉 하나면 된다</b><p>공원, 문틀, 학교 운동장. 장비값 0원으로 상체 당기기를 끝까지 끌어올릴 수 있는 운동은 이것뿐이다.</p></div>
-    </div>
-    <div class="caution"><b>CAUTION</b> · 매 반복 아래에서 팔을 다 펴되(데드행) 어깨는 귀 쪽으로 늘어지지 않게 견갑을 살짝 잡아 둔다. 반동(키핑)은 횟수를 늘리지만 근력은 안 늘린다. 팔꿈치 안쪽이 아프면 그립을 바꾸거나(뉴트럴) 볼륨을 줄인다. 힘줄은 근육보다 늦게 자란다.</div>
+    <div class="ttl"><b>HOW</b><span id="howTtl">하는 법</span></div>
+    <div class="whygrid" id="howgrid"></div>
+  </div>
+  <div class="win">
+    <div class="ttl"><b>WHY</b><span id="whyTtl">까닭</span></div>
+    <div class="whygrid" id="whygrid"></div>
+    <div class="caution" id="caution"></div>
   </div>
   <div class="sync" id="syncMsg">LOCAL SAVE</div>
 </div>
@@ -289,6 +297,7 @@ td.r{text-align:right;font-family:"Press Start 2P";font-size:10px;color:var(--cy
   <button class="logbtn" id="ovOk">OK</button>
 </div></div>
 
+<script>window.__RING_SEED__={"total": 77, "pr": 9, "sessions": [{"d": "2026-09-18", "sets": [6, 5], "total": 11}], "target": 6, "sets": 4, "lastSession": "2026-09-18", "bumpedDay": ""};</script>
 <script>
 // ---------- PIXEL ART ENGINE ----------
 function px(rows, pal, opts){ // rows: array of strings; pal: {char:color}; returns svg
@@ -394,94 +403,122 @@ const fmtK = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'
 const todayKey = () => fmtK(new Date());
 const weekKey = d => { d=new Date(d); const day=(d.getDay()+6)%7; d.setDate(d.getDate()-day); return fmtK(d); };
 
-// ---------- world ----------
-const TERR = [
- {n:"운동장 철봉",m:"녹슨 졸병",b:"쇠봉의 문지기",tile:"field",tip:"데드행 30초, 스캐풀러 풀업 10개로 몸을 깨운다."},
- {n:"첫 백 개",m:"미끄러운 손",b:"손을 푸는 자",tile:"field",tip:"턱이 아니라 쇄골을 봉으로 가져간다는 느낌으로."},
- {n:"느린 언덕",m:"반쪽 턱 병사",b:"반쪽 턱",tile:"forest",tip:"내려올 때 3초. 네거티브가 근력을 만든다."},
- {n:"좁은 다리",m:"흔들리는 다리",b:"반동의 장수",tile:"lake",tip:"와이드·뉴트럴·친업을 세트마다 돌려 가며."},
- {n:"천 번의 문",m:"철의 수련병",b:"철의 수련자",tile:"forest",tip:"L-싯 풀업, 체스트-투-바 시작. 중량 벨트 고려."},
- {n:"철의 계곡",m:"허리띠 병사",b:"무거운 허리띠",tile:"mount",tip:"중량 5~10kg × 5회 세트를 섞는다."},
- {n:"높은 봉",m:"봉 위 근위병",b:"높은 봉의 주인",tile:"mount",tip:"익스플로시브 풀업, 머슬업 전환 연습."},
- {n:"봉 위",m:"왕의 친위대",b:"봉 위의 왕",tile:"castle",tip:"머슬업 5회 세트. 다음 장은 네가 쓴다."},
- {n:"불의 성벽",m:"성벽 궁수",b:"성벽의 대장",tile:"lava",tip:"중량 15kg+. 3~5회 세트."},
- {n:"얼음 안뜰",m:"안뜰 창병",b:"안뜰의 기사",tile:"snow",tip:"원암 풀업 보조 훈련 시작."},
- {n:"탑의 계단",m:"탑의 파수병",b:"탑지기",tile:"mount",tip:"프론트레버 툭 홀드 병행."},
- {n:"옥좌",m:"그림자 호위",b:"이름 없는 왕",tile:"castle",tip:"기록이 답을 알고 있다."},
-];
-const ALLIES = [
- {lv:2,n:"견습병",r:"보병",p:2,e:"🪖"},{lv:4,n:"창병 소대",r:"보병",p:3,e:"🔱"},{lv:6,n:"궁수대",r:"원거리",p:4,e:"🏹"},{lv:9,n:"기마대",r:"돌격",p:5,e:"🐎"},
- {lv:12,n:"공병대",r:"공성",p:6,e:"⚒️"},{lv:16,n:"철갑대",r:"중장보병",p:8,e:"🛡️"},{lv:20,n:"근위대",r:"정예",p:10,e:"⚔️"},{lv:25,n:"노장군",r:"총사령",p:12,e:"🎖️"},
-];
+// ---------- exercises ----------
+const EXD = {
+ pull:{ n:'턱걸이', en:'PULL-UP', key:'pullup-ledger-v1', target:8, sets:5,
+  TERR:[
+   {n:"운동장 철봉",m:"녹슨 졸병",b:"쇠봉의 문지기",tile:"field",tip:"데드행 30초, 스캐풀러 풀업 10개로 몸을 깨운다."},
+   {n:"첫 백 개",m:"미끄러운 손",b:"손을 푸는 자",tile:"field",tip:"턱이 아니라 쇄골을 봉으로 가져간다는 느낌으로."},
+   {n:"느린 언덕",m:"반쪽 턱 병사",b:"반쪽 턱",tile:"forest",tip:"내려올 때 3초. 네거티브가 근력을 만든다."},
+   {n:"좁은 다리",m:"흔들리는 다리",b:"반동의 장수",tile:"lake",tip:"와이드·뉴트럴·친업을 세트마다 돌려 가며."},
+   {n:"천 번의 문",m:"철의 수련병",b:"철의 수련자",tile:"forest",tip:"L-싯 풀업, 체스트-투-바 시작. 중량 벨트 고려."},
+   {n:"철의 계곡",m:"허리띠 병사",b:"무거운 허리띠",tile:"mount",tip:"중량 5~10kg × 5회 세트를 섞는다."},
+   {n:"높은 봉",m:"봉 위 근위병",b:"높은 봉의 주인",tile:"mount",tip:"익스플로시브 풀업, 머슬업 전환 연습."},
+   {n:"봉 위",m:"왕의 친위대",b:"봉 위의 왕",tile:"castle",tip:"머슬업 5회 세트. 다음 장은 네가 쓴다."},
+   {n:"불의 성벽",m:"성벽 궁수",b:"성벽의 대장",tile:"lava",tip:"중량 15kg+. 3~5회 세트."},
+   {n:"얼음 안뜰",m:"안뜰 창병",b:"안뜰의 기사",tile:"snow",tip:"원암 풀업 보조 훈련 시작."},
+   {n:"탑의 계단",m:"탑의 파수병",b:"탑지기",tile:"mount",tip:"프론트레버 툭 홀드 병행."},
+   {n:"옥좌",m:"그림자 호위",b:"이름 없는 왕",tile:"castle",tip:"기록이 답을 알고 있다."}],
+  RANKS:[[0,'E','매달리기부터'],[5,'D','수련자'],[8,'C','철봉을 아는 자'],[12,'B','봉을 다스리는 자'],[16,'A','철의 팔'],[20,'S','봉 위의 사람']],
+  MILES:[{k:'s5',t:'한 세트 5회',f:s=>s.pr>=5},{k:'s10',t:'한 세트 10회',f:s=>s.pr>=10},{k:'c100',t:'누적 100회',f:s=>s.total>=100},{k:'s15',t:'한 세트 15회',f:s=>s.pr>=15},{k:'w4',t:'4주 연속 출석',f:s=>streak(s)>=4},{k:'c500',t:'누적 500회',f:s=>s.total>=500},{k:'s20',t:'한 세트 20회',f:s=>s.pr>=20},{k:'c1000',t:'누적 1,000회',f:s=>s.total>=1000},{k:'g3',t:'영토 3곳 점령',f:s=>s.war.conq.length>=3},{k:'s25',t:'한 세트 25회',f:s=>s.pr>=25}],
+  SAY:['세트 기록. 적 {d} 격퇴.','좋다. 오늘 {t}회.','전선이 {d}만큼 전진했다.','팔이 뜨겁다면 정상이다. 계속.','등이 넓어지는 소리가 들린다.'],
+  WHY:[['등의 넓이는 여기서 나온다','광배근을 가장 넓은 가동범위로 늘였다 당기는 운동. 등이 옆으로 퍼지는 "V자"는 로우가 아니라 수직 당기기가 만든다.'],['당기기 근력의 기준점','맨몸 턱걸이 횟수는 어디서든 통하는 상체 당기기 지표다. 군대·체력검정·운동선수 평가가 괜히 이걸 쓰는 게 아니다.'],['악력과 팔뚝이 같이 자란다','매달리는 것 자체가 악력 훈련. 악력은 전신 근력과 상관이 높고, 나이 들수록 가치가 커지는 능력이다.'],['어깨를 바로 세운다','견갑골을 아래로 끌어내리는 동작이 책상 앞에서 말린 어깨의 반대 방향이다. 링딥스 같은 밀기와 짝을 이뤄 균형을 잡는다.'],['5세트인 이유','근비대는 세트 수(볼륨)에 반응한다. 4세트에서 5세트로 올리면 주간 볼륨이 25% 늘고, 마지막 세트가 실패 근처에서 자극을 준다. 대신 세트 사이 2분은 꼭 쉰다.'],['철봉 하나면 된다','공원, 문틀, 학교 운동장. 장비값 0원으로 상체 당기기를 끝까지 끌어올릴 수 있는 운동은 이것뿐이다.']],
+  CAUTION:'<b>CAUTION</b> · 매 반복 아래에서 팔을 다 펴되(데드행) 어깨는 귀 쪽으로 늘어지지 않게 견갑을 살짝 잡아 둔다. 반동(키핑)은 횟수를 늘리지만 근력은 안 늘린다. 팔꿈치 안쪽이 아프면 그립을 바꾸거나(뉴트럴) 볼륨을 줄인다. 힘줄은 근육보다 늦게 자란다.',
+  HOW:[['그립','어깨보다 약간 넓게, 오버핸드. 엄지는 감아도 되고 안 감아도 된다. 손바닥 굳은살 자리에 봉이 오게.'],['시작 자세','데드행에서 견갑을 아래로 살짝 당겨 어깨가 귀에서 멀어지게(스캐풀러 풀업). 코어 조이고 다리는 모은다.'],['당기기','팔꿈치를 뒤·아래로 보낸다는 느낌. 턱이 아니라 쇄골을 봉으로. 반동 없이 1초.'],['내리기','2~3초에 걸쳐 팔이 다 펴질 때까지. 네거티브 구간이 근력을 만든다.'],['안 될 때','밴드 보조, 점프해서 올라가 천천히 내려오기(네거티브만) 5회 × 5세트, 인버티드 로우.'],['휴식·빈도','세트 간 2~3분. 주 3회, 이틀 연속은 피한다.']] },
+ ring:{ n:'링딥스', en:'RING DIPS', key:'ring-pilgrim-v1', target:12, sets:5,
+  TERR:[
+   {n:"출발의 뜰",m:"녹슨 병정",b:"녹슨 문의 파수꾼",tile:"field",s:"두 개의 링이 나무 아래 흔들린다. 손을 넣는 순간, 길이 시작된다.",tip:"어깨를 귀에서 멀리, 손목은 중립. 내려갈 때 팔꿈치는 뒤로."},
+   {n:"흔들다리",m:"흔들이 요정",b:"흔들이 정령",tile:"lake",s:"다리 위에서 링이 흔들린다. 흔들림을 억누르는 대신, 몸통을 판자처럼 만든다.",tip:"하단에서 1초 정지. 튕겨 올라오지 말 것."},
+   {n:"안개 숲",m:"안개 도깨비",b:"무릎 꿇리는 안개",tile:"forest",s:"앞이 안 보인다. 세는 걸 잊고 그저 다음 한 개에 집중하는 법을 배운다.",tip:"템포 3-1-1: 3초 내리고, 1초 멈추고, 1초 올린다."},
+   {n:"철의 계단",m:"철갑 병정",b:"철의 순례자",tile:"mount",s:"계단마다 무게가 붙는다. 어제의 최고 기록이 오늘의 첫 세트가 된다.",tip:"상단에서 링을 바깥으로 돌리는 RTO 자세를 1~2초."},
+   {n:"불의 협곡",m:"불꽃 도마뱀",b:"꺼지지 않는 화로",tile:"lava",s:"열기가 팔을 감싼다. 여기서 도망친 사람은 많고, 건넌 사람은 적다.",tip:"마지막 세트는 실패 2회 전에서 멈춘다."},
+   {n:"고요한 호수",m:"물그림자",b:"호수의 쌍둥이 고리",tile:"lake",s:"물 위에 자신의 모습이 비친다. 몇 달 전보다 어깨가 넓어졌다.",tip:"중량 추가를 고려할 때. 벨트에 2.5~5kg부터."},
+   {n:"별의 들판",m:"별똥 병정",b:"별지기",tile:"field",s:"밤하늘 아래 들판. 세는 숫자가 별처럼 쌓인다.",tip:"RTO 딥스 + 중량 딥스를 번갈아."},
+   {n:"얼음 성채",m:"서리 병정",b:"서리 성주",tile:"snow",s:"얼어붙은 성. 몸이 식기 전에 다음 세트로.",tip:"머슬업 전환 연습 시작. 링 위로 몸을 넘기는 감각."},
+   {n:"폭풍 고개",m:"바람 늑대",b:"폭풍의 기수",tile:"mount",s:"바람이 링을 흔든다. 그래도 몸통은 판자다.",tip:"중량 10kg 이상. 5회 세트 위주."},
+   {n:"왕의 고리탑",m:"탑의 근위병",b:"고리의 왕",tile:"castle",s:"탑 꼭대기에 두 링이 매달려 있다. 여기까지 온 순례자는 손에 꼽는다.",tip:"RTO 유지 5초 + 중량 딥스. 지도의 끝이 보인다."},
+   {n:"하늘길",m:"구름 병정",b:"하늘의 문지기",tile:"snow",s:"지도가 끝났다. 이제부터는 네가 그리는 길이다.",tip:"스스로 프로그램을 짤 시간."},
+   {n:"마지막 문",m:"그림자 병정",b:"심연의 고리",tile:"castle",s:"문 너머는 아무도 모른다.",tip:"기록이 답을 알고 있다."}],
+  RANKS:[[0,'E','링을 잡은 자'],[6,'D','순례자'],[10,'C','흔들림을 아는 자'],[15,'B','링을 다스리는 자'],[20,'A','철의 가슴'],[25,'S','고리의 계승자']],
+  MILES:[{k:'s8',t:'한 세트 8회',f:s=>s.pr>=8},{k:'s12',t:'한 세트 12회',f:s=>s.pr>=12},{k:'c100',t:'누적 100회',f:s=>s.total>=100},{k:'s15',t:'한 세트 15회',f:s=>s.pr>=15},{k:'w4',t:'4주 연속 출석',f:s=>streak(s)>=4},{k:'c500',t:'누적 500회',f:s=>s.total>=500},{k:'s20',t:'한 세트 20회',f:s=>s.pr>=20},{k:'c1000',t:'누적 1,000회',f:s=>s.total>=1000},{k:'g3',t:'영토 3곳 점령',f:s=>s.war.conq.length>=3},{k:'s30',t:'한 세트 30회',f:s=>s.pr>=30}],
+  SAY:['오늘 {r}개는 내일 한 개 더의 씨앗.','흔들리는 걸 잡는 힘이 진짜 힘이다.','머슬업의 절반은 딥스다. 통행권 적립 중.','한 개 = 한 걸음. 지도가 {d}만큼 움직였다.','안 한 날은 0, 조금 한 날은 조금. 오늘 {t}회.','기록은 거짓말을 안 한다.'],
+  WHY:[['가슴·삼두·앞어깨를 한 번에','딥스는 밀기 운동의 압축판이다. 가슴 아래쪽, 삼두, 앞어깨가 동시에 일하고, 팔이 완전히 펴지는 구간까지 부하가 걸려 벤치보다 삼두 자극이 강하다.'],['흔들리는 링이 안정근을 깨운다','바 딥스와 달리 링은 계속 흔들린다. 그걸 붙잡느라 회전근개, 전거근, 코어가 매 반복마다 일한다. 같은 10개라도 링에서의 10개는 다른 운동이다.'],['어깨가 자유로운 궤적','고정된 바는 손 간격이 정해져 있지만 링은 팔이 자연스러운 각도로 움직인다. 손목·팔꿈치·어깨가 억지 각도 없이 내려갔다 올라온다.'],['머슬업·플란체로 가는 계단','링 머슬업의 후반부가 곧 링딥스다. RTO(링을 바깥으로 돌린 상단 자세)는 플란체와 아이언크로스의 기초 힘이다. 지금 쌓는 반복이 다음 기술의 통행료다.'],['턱걸이와 짝','턱걸이가 당기기라면 딥스는 밀기. 둘을 같이 해야 어깨가 한쪽으로 말리지 않고 상체가 앞뒤로 균형 있게 자란다.'],['장비 하나, 어디서든','링 한 쌍이면 문틀이든 철봉이든 나무든 된다. 헬스장 없이도 상체 밀기 근력을 끝까지 끌어올릴 수 있는 몇 안 되는 운동.']],
+  CAUTION:'<b>CAUTION</b> · 하단에서 어깨가 앞으로 말리면 그 깊이는 아직 네 것이 아니다. 팔꿈치가 몸 옆에서 뒤로 가게, 어깨는 귀에서 멀리. 통증이 있으면 깊이를 줄이고, 반복은 실패 2개 전에서 멈춘다. 근육보다 힘줄이 늦게 자란다.',
+  HOW:[['서포트 홀드','링 위에서 팔을 다 펴고 버티기. 링이 몸 옆에 붙고 흔들리지 않을 때까지 10~20초 × 3. 이게 안 되면 딥스는 아직이다.'],['내리기','몸을 살짝 앞으로 기울이고 팔꿈치를 뒤로 보내며 어깨가 팔꿈치 높이까지. 3초. 어깨가 앞으로 말리면 그 위에서 멈춘다.'],['올리기','링을 몸 쪽으로 눌러 모으며 1초에 올라온다. 상단에서 팔 다 펴고, 가능하면 링을 바깥으로 돌린다(RTO).'],['호흡·템포','내릴 때 마시고 올릴 때 뱉는다. 3-1-1 템포가 기본.'],['안 될 때','밴드 보조 딥스, 네거티브만(올라갈 땐 발 사용) 5회 × 5세트, 평행봉 딥스로 먼저.'],['휴식·빈도','세트 간 2~3분. 턱걸이와 같은 날 해도 되고(당기기→밀기 순), 격일도 좋다.']] },
+};
+const EXK=['pull','ring'];
+const ALLIES=[{lv:2,n:"견습병",r:"보병",p:2,e:"🪖"},{lv:4,n:"창병 소대",r:"보병",p:3,e:"🔱"},{lv:6,n:"궁수대",r:"원거리",p:4,e:"🏹"},{lv:9,n:"기마대",r:"돌격",p:5,e:"🐎"},{lv:12,n:"공병대",r:"공성",p:6,e:"⚒️"},{lv:16,n:"철갑대",r:"중장보병",p:8,e:"🛡️"},{lv:20,n:"근위대",r:"정예",p:10,e:"⚔️"},{lv:25,n:"노장군",r:"총사령",p:12,e:"🎖️"}];
 const LVL=40;
 const T_MIN = i => 15 + i*10, T_BOSS = i => 30 + i*25;
-const terrOf = i => TERR[i] || {n:'미지의 땅 '+(i-TERR.length+1), m:'이름 없는 무리', b:'이름 없는 군주', tile:['field','forest','mount','lake','lava','castle','snow'][i%7], tip:'여기부터는 네가 프로그램을 짠다.'};
+const terrOf = (X,i) => X.TERR[i] || {n:'미지의 땅 '+(i-X.TERR.length+1), m:'이름 없는 무리', b:'이름 없는 군주', tile:['field','forest','mount','lake','lava','castle','snow'][i%7], tip:'여기부터는 네가 프로그램을 짠다.'};
 const levelOf = total => 1 + Math.floor(total/LVL);
 const alliesAt = lv => ALLIES.filter(a => lv >= a.lv);
 const powerAt = lv => alliesAt(lv).reduce((s,a)=>s+a.p,0);
 const nextAlly = lv => ALLIES.find(a => a.lv > lv);
-const RANKS = [[0,'E','매달리기부터'],[5,'D','수련자'],[8,'C','철봉을 아는 자'],[12,'B','봉을 다스리는 자'],[16,'A','철의 팔'],[20,'S','봉 위의 사람']];
-const rankOf = pr => { let r=RANKS[0]; RANKS.forEach(x=>{ if(pr>=x[0]) r=x; }); return r; };
-const TITLES = [[1,'이름 없는 수련자'],[3,'철봉 견습생'],[6,'끈기의 수련자'],[10,'철의 손'],[15,'봉의 기사'],[20,'등 넓은 사람'],[30,'철봉의 주인']];
+const rankOf = (X,pr) => { let r=X.RANKS[0]; X.RANKS.forEach(x=>{ if(pr>=x[0]) r=x; }); return r; };
+const TITLES=[[1,'이름 없는 수련자'],[3,'견습생'],[6,'끈기의 수련자'],[10,'철의 손'],[15,'봉과 링의 기사'],[20,'등 넓은 사람'],[30,'각성한 자'],[45,'철과 고리의 주인']];
 const titleOf = lv => { let t=TITLES[0][1]; TITLES.forEach(x=>{ if(lv>=x[0]) t=x[1]; }); return t; };
 
 // ---------- state ----------
-const KEY='pullup-ledger-v1';
-let S={total:0, pr:0, sessions:[], target:8, sets:5, lastSession:'', bumpedDay:'', updatedAt:0, started:'', vow:{}, miles:{}, war:null, sets5:false};
-try{ const raw=localStorage.getItem(KEY); if(raw) S=Object.assign(S,JSON.parse(raw)); }catch(e){}
-if (!S.started) S.started=todayKey();
-if (!S.sets5){ if(S.sets===4) S.sets=5; S.sets5=true; }
+const KEY='ironring-v1';
+function freshEx(k){ const X=EXD[k]; return {total:0,pr:0,sessions:[],target:X.target,sets:X.sets,lastSession:'',bumpedDay:'',vow:{},miles:{},war:null}; }
+function fromOld(o,k){ const e=freshEx(k); if(!o) return e; ['total','pr','sessions','target','sets','lastSession','bumpedDay','vow','miles'].forEach(f=>{ if(o[f]!==undefined&&o[f]!==null) e[f]=o[f]; }); e.sessions=e.sessions||[]; e.vow=e.vow||{}; e.miles=e.miles||{}; if(k==='pull'&&e.sets===4) e.sets=5; if(k==='ring'&&e.sets===4) e.sets=5; e.war=o.war&&o.war.conq?o.war:null; return e; }
+let S={cur:'pull', ex:{}, started:'', updatedAt:0};
+let migrated=false;
+(function load(){ let raw=null; try{ raw=localStorage.getItem(KEY); }catch(e){} if(raw){ try{ S=Object.assign(S,JSON.parse(raw)); }catch(e){} }
+  else { let op=null, orr=null; try{ op=JSON.parse(localStorage.getItem('pullup-ledger-v1')||'null'); orr=JSON.parse(localStorage.getItem('ring-pilgrim-v1')||'null'); }catch(e){} if(!orr&&window.__RING_SEED__) orr=window.__RING_SEED__; S.ex.pull=fromOld(op,'pull'); S.ex.ring=fromOld(orr,'ring'); if(op&&op.started) S.started=op.started; migrated=!!(op||orr); }
+  EXK.forEach(k=>{ if(!S.ex[k]) S.ex[k]=freshEx(k); }); if(!S.started) S.started=todayKey(); if(!EXD[S.cur]) S.cur='pull'; })();
+const E = () => S.ex[S.cur];
+const X = () => EXD[S.cur];
+const heroTotal = () => EXK.reduce((a,k)=>a+S.ex[k].total,0);
 let db=null, docRef=null, wT=null, applying=false;
 function persist(){ S.updatedAt=Date.now(); try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} if(docRef&&!applying){ clearTimeout(wT); wT=setTimeout(async()=>{ try{ await docRef.set(JSON.parse(JSON.stringify(S))); $('syncMsg').textContent='CLOUD SYNC OK'; }catch(e){ $('syncMsg').textContent='LOCAL SAVE (SYNC FAIL)'; } },600);} }
-(async()=>{ try{ db=await (window.claude?.use?.('db')??Promise.resolve(null)); if(!db) return; docRef=db.doc('state/main'); const s=await docRef.get(); if(s.exists){ const r=s.data(); if((r.updatedAt||0)>(S.updatedAt||0)){ applying=true; S=Object.assign(S,r); if(!S.war) rebuildWar(); if(!S.sets5){ if(S.sets===4) S.sets=5; S.sets5=true; } try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} render(); applying=false; } else if((S.updatedAt||0)>(r.updatedAt||0)) persist(); } else persist(); $('syncMsg').textContent='CLOUD SYNC OK'; docRef.onSnapshot(sn=>{ if(!sn.exists||sn.metadata.hasPendingWrites) return; const r=sn.data(); if((r.updatedAt||0)>(S.updatedAt||0)){ applying=true; S=Object.assign(S,r); if(!S.war) rebuildWar(); render(); applying=false; } },()=>{}); }catch(e){} })();
+function adopt(r){ if(!r.ex){ const n={cur:'pull',ex:{pull:fromOld(r,'pull'),ring:S.ex.ring||fromOld(window.__RING_SEED__||null,'ring')},started:r.started||S.started,updatedAt:r.updatedAt||0}; r=n; } S=Object.assign(S,r); EXK.forEach(k=>{ if(!S.ex[k]) S.ex[k]=freshEx(k); if(!S.ex[k].war) rebuildWar(S.ex[k]); }); }
+(async()=>{ try{ db=await (window.claude?.use?.('db')??Promise.resolve(null)); if(!db) return; docRef=db.doc('state/main'); const s=await docRef.get(); if(s.exists){ const r=s.data(); if((r.updatedAt||0)>(S.updatedAt||0)||!r.ex){ applying=true; adopt(r); try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} render(); applying=false; if(!r.ex) persist(); } else if((S.updatedAt||0)>(r.updatedAt||0)) persist(); } else persist(); $('syncMsg').textContent='CLOUD SYNC OK'; docRef.onSnapshot(sn=>{ if(!sn.exists||sn.metadata.hasPendingWrites) return; const r=sn.data(); if(r.ex&&(r.updatedAt||0)>(S.updatedAt||0)){ applying=true; adopt(r); render(); applying=false; } },()=>{}); }catch(e){} })();
 
 // ---------- war ----------
 function freshWar(){ return {t:0,m:0,b:0,conq:[]}; }
 function applyDamage(w,d){ const ev=[]; while(d>0){ const T=w.t, mm=T_MIN(T), bh=T_BOSS(T); if(w.m<mm){ const k=Math.min(d,mm-w.m); w.m+=k; d-=k; if(w.m>=mm) ev.push({type:'boss',T}); } else { const k=Math.min(d,bh-w.b); w.b+=k; d-=k; if(w.b>=bh){ ev.push({type:'conquer',T}); w.conq.push(T); w.t++; w.m=0; w.b=0; } } } return ev; }
-function rebuildWar(){ const w=freshWar(); const chron=[...S.sessions].reverse(); const sum=chron.reduce((a,s)=>a+s.total,0); let run=0; const pre=Math.max(0,S.total-sum); if(pre>0){ applyDamage(w,pre); run=pre; } chron.forEach(s=>s.sets.forEach(r=>{ applyDamage(w, r+powerAt(levelOf(run))); run+=r; })); S.war=w; }
-if(!S.war) rebuildWar();
-let reinforced=0;
-(function(){ if(!S.lastSession) return; const days=Math.floor((Date.now()-new Date(S.lastSession).getTime())/86400000); if(days>=7&&(S.war.m>0||S.war.b>0)){ const w=S.war; if(w.b>0){ reinforced=Math.round(T_BOSS(w.t)*0.1); w.b=Math.max(0,w.b-reinforced); } else { reinforced=Math.round(T_MIN(w.t)*0.1); w.m=Math.max(0,w.m-reinforced); } S.lastSession=todayKey(); persist(); } })();
+function rebuildWar(e){ const w=freshWar(); const chron=[...e.sessions].reverse(); const sum=chron.reduce((a,s)=>a+s.total,0); let run=0; const pre=Math.max(0,e.total-sum); if(pre>0){ applyDamage(w,pre); run=pre; } chron.forEach(s=>s.sets.forEach(r=>{ applyDamage(w, r+powerAt(levelOf(run))); run+=r; })); e.war=w; }
+EXK.forEach(k=>{ if(!S.ex[k].war) rebuildWar(S.ex[k]); });
+if(migrated) persist();
+const reinforced={};
+EXK.forEach(k=>{ const e=S.ex[k]; reinforced[k]=0; if(!e.lastSession) return; const days=Math.floor((Date.now()-new Date(e.lastSession).getTime())/86400000); if(days>=7&&(e.war.m>0||e.war.b>0)){ const w=e.war; let r=0; if(w.b>0){ r=Math.round(T_BOSS(w.t)*0.1); w.b=Math.max(0,w.b-r); } else { r=Math.round(T_MIN(w.t)*0.1); w.m=Math.max(0,w.m-r); } reinforced[k]=r; e.lastSession=todayKey(); persist(); } });
 
 let typeT=null;
 function sys(msg){ const el=$('sysMsg'); clearTimeout(typeT); el.textContent=''; let i=0; (function step(){ el.textContent=msg.slice(0,i); i++; if(i<=msg.length) typeT=setTimeout(step,26); })(); }
 
 // ---------- logging ----------
-let reps=S.target;
-function todayRec(){ const k=todayKey(); let r=S.sessions.find(s=>s.d===k); if(!r){ r={d:k,sets:[],total:0}; S.sessions.unshift(r); } return r; }
-function todaySets(){ const r=S.sessions.find(s=>s.d===todayKey()); return r?r.sets:[]; }
-const MILES=[
- {k:'s5',t:'한 세트 5회',f:s=>s.pr>=5},{k:'s10',t:'한 세트 10회',f:s=>s.pr>=10},{k:'c100',t:'누적 100회',f:s=>s.total>=100},{k:'s15',t:'한 세트 15회',f:s=>s.pr>=15},
- {k:'w4',t:'4주 연속 출석',f:s=>streak(s)>=4},{k:'c500',t:'누적 500회',f:s=>s.total>=500},{k:'s20',t:'한 세트 20회',f:s=>s.pr>=20},{k:'c1000',t:'누적 1,000회',f:s=>s.total>=1000},
- {k:'g3',t:'영토 3곳 점령',f:s=>s.war.conq.length>=3},{k:'s25',t:'한 세트 25회',f:s=>s.pr>=25},
-];
-function streak(s){ const weeks=new Set(s.sessions.map(x=>weekKey(x.d))); let st=0,d=new Date(); if(!weeks.has(weekKey(d))) d.setDate(d.getDate()-7); while(weeks.has(weekKey(d))&&st<500){st++; d.setDate(d.getDate()-7);} return st; }
-function checkMiles(){ S.miles=S.miles||{}; const fresh=[]; MILES.forEach(m=>{ if(!S.miles[m.k]&&m.f(S)){ S.miles[m.k]=todayKey(); fresh.push(m); } }); return fresh; }
+let reps=E().target;
+function todayRec(e){ const k=todayKey(); let r=e.sessions.find(s=>s.d===k); if(!r){ r={d:k,sets:[],total:0}; e.sessions.unshift(r); } return r; }
+function todaySets(e){ const r=e.sessions.find(s=>s.d===todayKey()); return r?r.sets:[]; }
+function streak(e){ const weeks=new Set(e.sessions.map(x=>weekKey(x.d))); let st=0,d=new Date(); if(!weeks.has(weekKey(d))) d.setDate(d.getDate()-7); while(weeks.has(weekKey(d))&&st<500){st++; d.setDate(d.getDate()-7);} return st; }
+function checkMiles(e,Xd){ e.miles=e.miles||{}; const fresh=[]; Xd.MILES.forEach(m=>{ if(!e.miles[m.k]&&m.f(e)){ e.miles[m.k]=todayKey(); fresh.push(m); } }); return fresh; }
 function logSet(){
-  const r=Math.max(1,reps), rec=todayRec();
-  const lvBefore=levelOf(S.total), rankBefore=rankOf(S.pr)[1];
-  rec.sets.push(r); rec.total+=r; S.total+=r; S.lastSession=todayKey(); S.sessions=S.sessions.slice(0,200);
-  const isPR=r>S.pr; if(isPR) S.pr=r;
-  const dmg=r+powerAt(lvBefore); const ev=applyDamage(S.war,dmg); warHit(dmg);
-  const lvAfter=levelOf(S.total), newAlly=alliesAt(lvAfter).length>alliesAt(lvBefore).length, rankAfter=rankOf(S.pr)[1];
-  let questDone=false; if(rec.sets.length>=S.sets && rec.sets.every(x=>x>=S.target) && S.bumpedDay!==rec.d){ S.target+=1; S.bumpedDay=rec.d; questDone=true; }
-  const fresh=checkMiles();
-  const vowHit = S.vow&&S.vow.reps&&r>=S.vow.reps&&!S.vow.done; if(vowHit) S.vow.done=todayKey();
+  const e=E(), Xd=X(), r=Math.max(1,reps), rec=todayRec(e);
+  const lvBefore=levelOf(heroTotal()), rankBefore=rankOf(Xd,e.pr)[1];
+  rec.sets.push(r); rec.total+=r; e.total+=r; e.lastSession=todayKey(); e.sessions=e.sessions.slice(0,200);
+  const isPR=r>e.pr; if(isPR) e.pr=r;
+  const dmg=r+powerAt(lvBefore); const ev=applyDamage(e.war,dmg); warHit(dmg);
+  const lvAfter=levelOf(heroTotal()), newAlly=alliesAt(lvAfter).length>alliesAt(lvBefore).length, rankAfter=rankOf(Xd,e.pr)[1];
+  let questDone=false; if(rec.sets.length>=e.sets && rec.sets.every(x=>x>=e.target) && e.bumpedDay!==rec.d){ e.target+=1; e.bumpedDay=rec.d; questDone=true; }
+  const fresh=checkMiles(e,Xd);
+  const vowHit = e.vow&&e.vow.reps&&r>=e.vow.reps&&!e.vow.done; if(vowHit) e.vow.done=todayKey();
   persist();
   $('hero').classList.remove('flex'); void $('hero').offsetWidth; $('hero').classList.add('flex');
-  const conq=ev.find(e=>e.type==='conquer'), bossUp=ev.find(e=>e.type==='boss');
+  const conq=ev.find(x=>x.type==='conquer'), bossUp=ev.find(x=>x.type==='boss');
   const queue=[];
-  if (rankAfter!==rankBefore) queue.push(['RANK UP', rankAfter+' 등급', '한 세트 '+S.pr+'회. 「'+rankOf(S.pr)[2]+'」\n등급은 한 세트 최고 기록으로 정해진다.', heroPixel(lvAfter)]);
-  if (vowHit) queue.push(['VOW FULFILLED', S.vow.reps+'회 달성', (S.vow.name||'')+' — 적어 둔 대로 해냈다.\n'+(S.vow.why||'')+'\n새 서약을 적을 시간이다.', null]);
-  if (lvAfter>lvBefore) queue.push(['LEVEL UP', 'LV.'+lvAfter, '칭호 · '+titleOf(lvAfter)+'\n누적 '+S.total+'회. 어제의 너보다 강하다.', heroPixel(lvAfter)]);
-  if (newAlly){ const a=alliesAt(lvAfter).slice(-1)[0]; queue.push(['NEW ALLY', a.e+' '+a.n, a.r+' · 화력 +'+a.p+'\n이제 한 세트마다 '+powerAt(lvAfter)+'만큼 더 벤다.', null]); }
-  if (conq) queue.push(['TERRITORY CLEAR', terrOf(conq.T).n, '「'+terrOf(conq.T).b+'」을(를) 베고 땅을 얻었다.\n다음 던전: '+terrOf(conq.T+1).n, bossPixel(conq.T,{hurt:true})]);
-  else if (bossUp) queue.push(['BOSS APPEARS', terrOf(bossUp.T).b, '졸병을 모두 밀어냈다. 이 땅의 군주가 직접 나섰다.\nHP '+T_BOSS(bossUp.T), bossPixel(bossUp.T)]);
-  if (isPR && !queue.length) queue.push(['NEW RECORD', r+'회', '지난 최고를 넘었다. 이 숫자가 내일의 첫 세트다.', null]);
+  if (rankAfter!==rankBefore) queue.push(['RANK UP', Xd.n+' '+rankAfter+' 등급', '한 세트 '+e.pr+'회. 「'+rankOf(Xd,e.pr)[2]+'」\n등급은 한 세트 최고 기록으로 정해진다.', heroPixel(lvAfter)]);
+  if (vowHit) queue.push(['VOW FULFILLED', e.vow.reps+'회 달성', (e.vow.name||'')+' — 적어 둔 대로 해냈다.\n'+(e.vow.why||'')+'\n새 서약을 적을 시간이다.', null]);
+  if (lvAfter>lvBefore) queue.push(['LEVEL UP', 'LV.'+lvAfter, '칭호 · '+titleOf(lvAfter)+'\n턱걸이+링딥스 누적 '+heroTotal()+'회. 어제의 너보다 강하다.', heroPixel(lvAfter)]);
+  if (newAlly){ const a=alliesAt(lvAfter).slice(-1)[0]; queue.push(['NEW ALLY', a.e+' '+a.n, a.r+' · 화력 +'+a.p+'\n이제 두 전선 모두에서 한 세트마다 '+powerAt(lvAfter)+'만큼 더 벤다.', null]); }
+  if (conq) queue.push(['TERRITORY CLEAR', terrOf(Xd,conq.T).n, '「'+terrOf(Xd,conq.T).b+'」을(를) 베고 땅을 얻었다.\n다음 던전: '+terrOf(Xd,conq.T+1).n, bossPixel(conq.T+(S.cur==='ring'?100:0),{hurt:true})]);
+  else if (bossUp) queue.push(['BOSS APPEARS', terrOf(Xd,bossUp.T).b, '졸병을 모두 밀어냈다. 이 땅의 군주가 직접 나섰다.\nHP '+T_BOSS(bossUp.T), bossPixel(bossUp.T+(S.cur==='ring'?100:0))]);
+  if (isPR && !queue.length) queue.push(['NEW RECORD', Xd.n+' '+r+'회', '지난 최고를 넘었다. 이 숫자가 내일의 첫 세트다.', null]);
   if (fresh.length && !queue.length) queue.push(['ACHIEVEMENT', fresh[0].t, '기록에 날짜가 찍혔다.', null]);
-  if (questDone && !queue.length) queue.push(['QUEST CLEAR', '내일은 '+S.target+'회', '전 세트를 채웠다. 목표가 한 개 올랐다.', null]);
+  if (questDone && !queue.length) queue.push(['QUEST CLEAR', '내일은 '+e.target+'회', '전 세트를 채웠다. 목표가 한 개 올랐다.', null]);
   if (queue.length){ if(queue.some(q=>['RANK UP','LEVEL UP','TERRITORY CLEAR'].includes(q[0]))) confetti(); runQueue(queue); }
-  else sys(['세트 기록. 적 '+dmg+' 격퇴.','좋다. 오늘 '+rec.total+'회.','전선이 '+dmg+'만큼 전진했다.','팔이 뜨겁다면 정상이다. 계속.'][Math.floor(Math.random()*4)]);
+  else { const m=Xd.SAY[Math.floor(Math.random()*Xd.SAY.length)]; sys(m.replace('{d}',dmg).replace('{t}',rec.total).replace('{r}',r)); }
   render();
 }
 let ovQueue=[];
@@ -489,98 +526,111 @@ function runQueue(q){ ovQueue=q.slice(); nextOv(); }
 function nextOv(){ const q=ovQueue.shift(); if(!q){ $('ov').classList.remove('on'); return; } overlay(...q); }
 function overlay(e,t,b,port){ $('ovEye').textContent=e; $('ovTitle').textContent=t; $('ovBody').textContent=b; $('ovPort').innerHTML=port||''; $('ovPort').hidden=!port; $('ov').classList.add('on'); sys('['+e+'] '+t); }
 $('ovOk').onclick=()=>{ $('ov').classList.remove('on'); setTimeout(nextOv,150); };
-function undo(){ const rec=S.sessions.find(s=>s.d===todayKey()); if(!rec||!rec.sets.length) return; const r=rec.sets.pop(); rec.total-=r; S.total=Math.max(0,S.total-r); if(!rec.sets.length) S.sessions=S.sessions.filter(s=>s!==rec); S.pr=Math.max(0,...S.sessions.flatMap(s=>s.sets)); rebuildWar(); persist(); sys('마지막 세트 취소. 전황을 되감았다.'); render(); }
+function undo(){ const e=E(); const rec=e.sessions.find(s=>s.d===todayKey()); if(!rec||!rec.sets.length) return; const r=rec.sets.pop(); rec.total-=r; e.total=Math.max(0,e.total-r); if(!rec.sets.length) e.sessions=e.sessions.filter(s=>s!==rec); e.pr=Math.max(0,...e.sessions.flatMap(s=>s.sets)); rebuildWar(e); persist(); sys('마지막 세트 취소. 전황을 되감았다.'); render(); }
 function warHit(r){ const el=$('portrait'); el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit'); const rect=el.getBoundingClientRect(); const d=document.createElement('div'); d.className='dmg'; d.textContent='-'+r; d.style.left=(rect.left+rect.width/2-18)+'px'; d.style.top=rect.top+'px'; document.body.appendChild(d); setTimeout(()=>d.remove(),1100); }
 function confetti(){ const cols=['#5fe3ff','#ffd23f','#ff4b5c','#4be08a','#b07cff']; for(let i=0;i<80;i++){ const c=document.createElement('div'); c.className='confetti'; c.style.left=Math.random()*100+'vw'; c.style.background=cols[i%cols.length]; c.style.animationDelay=(Math.random()*.6)+'s'; document.body.appendChild(c); setTimeout(()=>c.remove(),2600);} }
 
 // ---------- render ----------
 function render(){
-  const lv=levelOf(S.total), rk=rankOf(S.pr), t=todaySets(), sum=t.reduce((a,b)=>a+b,0);
+  const e=E(), Xd=X(), lv=levelOf(heroTotal()), rk=rankOf(Xd,e.pr), t=todaySets(e), sum=t.reduce((a,b)=>a+b,0);
+  document.querySelectorAll('.exsw button').forEach(b=>b.classList.toggle('on',b.dataset.ex===S.cur));
+  const other=S.cur==='pull'?'ring':'pull'; const ot=todaySets(S.ex[other]).length; $('exNote').textContent=ot?EXD[other].n+' 오늘 '+ot+'세트 완료':EXD[other].n+' 오늘 미수행';
   $('reps').textContent=reps;
   $('hero').innerHTML=heroPixel(lv)+'<span class="rank">'+rk[1]+'</span>';
-  $('heroName').textContent=(S.vow&&S.vow.name)||'이름 없는 수련자'; $('heroLv').textContent='LV.'+lv; $('heroTitle').textContent='「'+titleOf(lv)+'」 · '+rk[1]+'급 '+rk[2];
-  const inLv=S.total-(lv-1)*LVL; $('expTxt').textContent=inLv+'/'+LVL; $('expFill').style.width=(inLv/LVL*100)+'%';
+  const nm=(S.ex.pull.vow&&S.ex.pull.vow.name)||(S.ex.ring.vow&&S.ex.ring.vow.name)||'이름 없는 수련자';
+  $('heroName').textContent=nm; $('heroLv').textContent='LV.'+lv; $('heroTitle').textContent='「'+titleOf(lv)+'」 · '+Xd.n+' '+rk[1]+'급 '+rk[2];
+  const inLv=heroTotal()-(lv-1)*LVL; $('expTxt').textContent=inLv+'/'+LVL+' (턱걸이 '+S.ex.pull.total+' + 링 '+S.ex.ring.total+')'; $('expFill').style.width=(inLv/LVL*100)+'%';
   $('stMeta').textContent='NO.'+S.started.replace(/-/g,'');
-  $('sTotal').textContent=S.total; $('sPR').textContent=S.pr; $('sStreak').textContent=streak(S); $('sTerr').textContent=S.war.conq.length;
-  $('qTarget').textContent=S.target; $('qSets').textContent=S.sets; $('optTarget').value=S.target; $('optSets').value=S.sets;
+  $('lblTotal').textContent=Xd.n+' · 누적'; $('lblPR').textContent=Xd.n+' · 세트 최고';
+  $('sTotal').textContent=e.total; $('sPR').textContent=e.pr; $('sStreak').textContent=streak(e); $('sTerr').textContent=S.ex.pull.war.conq.length+S.ex.ring.war.conq.length;
+  $('qName').textContent=Xd.n; $('qTarget').textContent=e.target; $('qSets').textContent=e.sets; $('optTarget').value=e.target; $('optSets').value=e.sets;
   $('todayLbl').textContent=t.length?t.length+'세트 · '+sum+'회':'미수행';
-  const goal=S.target*S.sets; $('goalFill').style.width=Math.min(100,sum/goal*100)+'%';
-  $('today').innerHTML=(t.length?t.map(x=>`<span class="${x>=S.pr&&x>0?'pr':''}">${x}</span>`).join(''):'<span class="ghost">첫 세트를 기록하면 여기에 찍힌다</span>')+(t.length?'<button class="undo" id="undoBtn">취소</button>':'');
+  const goal=e.target*e.sets; $('goalFill').style.width=Math.min(100,sum/goal*100)+'%';
+  $('today').innerHTML=(t.length?t.map(x=>`<span class="${x>=e.pr&&x>0?'pr':''}">${x}</span>`).join(''):'<span class="ghost">첫 세트를 기록하면 여기에 찍힌다</span>')+(t.length?'<button class="undo" id="undoBtn">취소</button>':'');
   if(t.length) $('undoBtn').onclick=undo;
-  $('logBtn').className='logbtn '+(t.length>=S.sets?'done':''); $('logBtn').textContent=t.length>=S.sets?'BONUS SET!':'SET COMPLETE!';
-  $('reward').innerHTML='세트당 EXP <b>+반복수</b> · 적 격퇴 <b>+반복수+화력 '+powerAt(lv)+'</b> · 5세트 전부 목표 달성 시 내일 목표 +1';
+  $('logBtn').className='logbtn '+(t.length>=e.sets?'done':''); $('logBtn').textContent=t.length>=e.sets?'BONUS SET!':'SET COMPLETE!';
+  $('reward').innerHTML='세트당 EXP <b>+반복수</b> · 적 격퇴 <b>+반복수+화력 '+powerAt(lv)+'</b> · '+e.sets+'세트 전부 목표 달성 시 내일 목표 +1';
+  $('whyTtl').textContent=Xd.n+'을 하는 까닭'; $('howTtl').textContent=Xd.n+' 하는 법';
+  $('whygrid').innerHTML=Xd.WHY.map((w,i)=>`<div class="w"><div class="rn">${String(i+1).padStart(2,'0')}</div><b>${w[0]}</b><p>${w[1]}</p></div>`).join(''); $('caution').innerHTML=Xd.CAUTION;
+  $('howgrid').innerHTML=Xd.HOW.map((w,i)=>`<div class="w"><div class="rn">STEP ${i+1}</div><b>${w[0]}</b><p>${w[1]}</p></div>`).join('');
   renderWar(); renderGrowth(); renderMot(); renderHist();
 }
 function flagSVG(){ return px(["k.......","kwwwww..","kwrrrww.","kwrrrww.","kwwwww..","k.......","k.......","k......."],{k:'#3b2a20',w:'#ffffff',r:'#ff4b5c'}); }
 function renderWar(){
-  const w=S.war, lv=levelOf(S.total), al=alliesAt(lv), pw=powerAt(lv), nx=nextAlly(lv);
-  const cur=terrOf(w.t), mm=T_MIN(w.t), bh=T_BOSS(w.t), bossPhase=w.m>=mm;
-  $('warLbl').textContent='TERRITORY '+w.conq.length+'/'+TERR.length;
-  const total=Math.max(TERR.length,w.t+1); let html='';
-  for(let i=0;i<total;i++){ const st=i<w.t?'conq':i===w.t?'cur':'fog'; const tt=terrOf(i);
+  const e=E(), Xd=X(), w=e.war, lv=levelOf(heroTotal()), al=alliesAt(lv), pw=powerAt(lv), nx=nextAlly(lv), off=S.cur==='ring'?100:0;
+  const cur=terrOf(Xd,w.t), mm=T_MIN(w.t), bh=T_BOSS(w.t), bossPhase=w.m>=mm;
+  $('warLbl').textContent=Xd.en+' · TERRITORY '+w.conq.length+'/'+Xd.TERR.length;
+  const total=Math.max(Xd.TERR.length,w.t+1); let html='';
+  for(let i=0;i<total;i++){ const st=i<w.t?'conq':i===w.t?'cur':'fog'; const tt=terrOf(Xd,i);
     const tile=tilePixel(tt.tile, st==='fog'?'fog':'conq').replace('<svg','<svg class="t"');
     let ov='';
     if(st==='conq') ov='<div class="flag">'+flagSVG()+'</div>';
-    if(st==='cur'){ ov='<div class="hero">'+heroPixel(lv)+'</div><div class="boss">'+bossPixel(i,{hurt:false})+'</div>'; }
+    if(st==='cur'){ ov='<div class="hero">'+heroPixel(lv)+'</div><div class="boss">'+bossPixel(i+off,{hurt:false})+'</div>'; }
     if(st==='fog'&&i>w.t+1) ov='<div class="fogq">?</div>';
     html+=`<div class="tile ${st}">${tile}${ov}<div class="nm">${st==='fog'&&i>w.t+1?'???':tt.n}</div></div>`; }
   $('warMap').innerHTML=html;
-  $('portrait').className='portrait '+(bossPhase?'':'shadow'); $('portrait').innerHTML=bossPixel(w.t)+(bossPhase?'':'<span class="ph">BOSS WAITING</span>');
+  $('portrait').className='portrait '+(bossPhase?'':'shadow'); $('portrait').innerHTML=bossPixel(w.t+off)+(bossPhase?'':'<span class="ph">BOSS WAITING</span>');
   $('terrName').innerHTML='<small>'+(bossPhase?'BOSS':'DUNGEON '+(w.t+1))+'</small>'+(bossPhase?cur.b:cur.n);
   $('terrEnemy').textContent=bossPhase?cur.n+'의 군주가 나섰다. HP '+(bh-w.b):'「'+cur.m+'」 '+(mm-w.m)+'명이 남았다';
   if(bossPhase){ $('minions').hidden=true; $('bossBar').hidden=false; $('bossFill').style.width=((bh-w.b)/bh*100)+'%'; $('bossTxt').textContent=(bh-w.b)+'/'+bh; }
-  else { $('minions').hidden=false; $('bossBar').hidden=true; let h=''; const ms=minionPixel(w.t); for(let i=0;i<mm;i++) h+=`<i class="${i<w.m?'down':''}">${ms}</i>`; $('minions').innerHTML=h; }
-  const perSet=S.target+pw, left=bossPhase?(bh-w.b):(mm-w.m)+bh;
+  else { $('minions').hidden=false; $('bossBar').hidden=true; let h=''; const ms=minionPixel(w.t+off); for(let i=0;i<mm;i++) h+=`<i class="${i<w.m?'down':''}">${ms}</i>`; $('minions').innerHTML=h; }
+  const perSet=e.target+pw, left=bossPhase?(bh-w.b):(mm-w.m)+bh;
   $('warHint').textContent='한 세트 = 반복수 + 화력 '+pw+' · 이 땅까지 약 '+Math.ceil(left/Math.max(1,perSet))+'세트';
-  $('warRein').textContent=reinforced?'7일 방치 · 적 '+reinforced+' 증원됨':'7일 쉬면 적이 10% 증원된다';
-  $('allies').innerHTML=(al.length?al.map(a=>`<div class="ally"><span class="av">${a.e}</span><b>${a.n}</b><small>${a.r} · 화력 ${a.p}</small></div>`).join(''):'<div class="ally none">아직 혼자다. LV.'+ALLIES[0].lv+'에 첫 부대가 온다.</div>')+(nx?`<div class="ally next"><span class="av">?</span><b>${nx.n}</b><small>LV.${nx.lv} 합류 · ${(nx.lv-1)*LVL-S.total}회 남음</small></div>`:'');
-  $('terrTip').textContent='지침 · '+cur.tip;
+  $('warRein').textContent=reinforced[S.cur]?'7일 방치 · 적 '+reinforced[S.cur]+' 증원됨':'7일 쉬면 적이 10% 증원된다';
+  $('allies').innerHTML=(al.length?al.map(a=>`<div class="ally"><span class="av">${a.e}</span><b>${a.n}</b><small>${a.r} · 화력 ${a.p}</small></div>`).join(''):'<div class="ally none">아직 혼자다. LV.'+ALLIES[0].lv+'에 첫 부대가 온다.</div>')+(nx?`<div class="ally next"><span class="av">?</span><b>${nx.n}</b><small>LV.${nx.lv} 합류 · ${(nx.lv-1)*LVL-heroTotal()}회 남음</small></div>`:'');
+  $('terrTip').textContent=(cur.s?cur.s+'  ':'')+'지침 · '+cur.tip;
 }
 function renderGrowth(){
-  const c=$('growth'), ctx=c.getContext('2d'), W=c.width, H=c.height; ctx.clearRect(0,0,W,H);
-  const weeks=[]; const now=new Date(); for(let i=7;i>=0;i--){ const d=new Date(now); d.setDate(d.getDate()-i*7); const k=weekKey(d); const ss=S.sessions.filter(s=>weekKey(s.d)===k); weeks.push({k, tot:ss.reduce((a,s)=>a+s.total,0), pr:Math.max(0,...ss.flatMap(s=>s.sets))}); }
+  const e=E(); const c=$('growth'), ctx=c.getContext('2d'), W=c.width, H=c.height; ctx.clearRect(0,0,W,H);
+  const weeks=[]; const now=new Date(); for(let i=7;i>=0;i--){ const d=new Date(now); d.setDate(d.getDate()-i*7); const k=weekKey(d); const ss=e.sessions.filter(s=>weekKey(s.d)===k); weeks.push({k, tot:ss.reduce((a,s)=>a+s.total,0), pr:Math.max(0,...ss.flatMap(s=>s.sets))}); }
   const maxT=Math.max(10,...weeks.map(w=>w.tot)), maxP=Math.max(5,...weeks.map(w=>w.pr)); const pad=28, bw=(W-pad*2)/8;
   ctx.fillStyle='#1c2447'; [0.25,0.5,0.75].forEach(f=>{ ctx.fillRect(pad,Math.round(H-20-(H-40)*f),W-pad*2,2); });
-  weeks.forEach((w,i)=>{ const x=Math.round(pad+i*bw+bw*0.2), h=Math.round((H-40)*w.tot/maxT/6)*6; ctx.fillStyle='#3557d8'; ctx.fillRect(x,H-20-h,Math.round(bw*0.6),h); ctx.fillStyle='#5fe3ff'; for(let yy=H-20-h;yy<H-20;yy+=6) ctx.fillRect(x,yy,Math.round(bw*0.6),2); ctx.fillStyle='#a9b3d6'; ctx.font='9px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText(w.tot||'', x+bw*0.3, H-24-h); ctx.fillText(w.k.slice(5), x+bw*0.3, H-6); });
-  weeks.forEach((w,i)=>{ if(!w.pr) return; const x=Math.round(pad+i*bw+bw*0.5), y=Math.round(H-20-(H-40)*w.pr/maxP); ctx.fillStyle='#ffd23f'; ctx.fillRect(x-4,y-4,8,8); if(i&&weeks[i-1].pr){ const px0=Math.round(pad+(i-1)*bw+bw*0.5), py0=Math.round(H-20-(H-40)*weeks[i-1].pr/maxP); ctx.fillStyle='#ffd23f'; const steps=8; for(let s=0;s<=steps;s++){ ctx.fillRect(Math.round(px0+(x-px0)*s/steps)-1, Math.round(py0+(y-py0)*s/steps)-1, 3,3); } } });
-  ctx.fillStyle='#a9b3d6'; ctx.textAlign='left'; ctx.font='8px "Press Start 2P"'; ctx.fillText('WEEKLY REPS', pad, 12); ctx.fillStyle='#ffd23f'; ctx.fillText('SET MAX', pad+130, 12);
+  weeks.forEach((w,i)=>{ const x=Math.round(pad+i*bw+bw*0.2), h=Math.round((H-40)*w.tot/maxT/6)*6; ctx.fillStyle=S.cur==='ring'?'#b8384e':'#3557d8'; ctx.fillRect(x,H-20-h,Math.round(bw*0.6),h); ctx.fillStyle=S.cur==='ring'?'#ff9fb0':'#5fe3ff'; for(let yy=H-20-h;yy<H-20;yy+=6) ctx.fillRect(x,yy,Math.round(bw*0.6),2); ctx.fillStyle='#a9b3d6'; ctx.font='9px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText(w.tot||'', x+bw*0.3, H-24-h); ctx.fillText(w.k.slice(5), x+bw*0.3, H-6); });
+  weeks.forEach((w,i)=>{ if(!w.pr) return; const x=Math.round(pad+i*bw+bw*0.5), y=Math.round(H-20-(H-40)*w.pr/maxP); ctx.fillStyle='#ffd23f'; ctx.fillRect(x-4,y-4,8,8); if(i&&weeks[i-1].pr){ const px0=Math.round(pad+(i-1)*bw+bw*0.5), py0=Math.round(H-20-(H-40)*weeks[i-1].pr/maxP); const steps=8; for(let s=0;s<=steps;s++){ ctx.fillRect(Math.round(px0+(x-px0)*s/steps)-1, Math.round(py0+(y-py0)*s/steps)-1, 3,3); } } });
+  ctx.fillStyle='#a9b3d6'; ctx.textAlign='left'; ctx.font='8px "Press Start 2P"'; ctx.fillText(X().en+' WEEKLY', pad, 12); ctx.fillStyle='#ffd23f'; ctx.fillText('SET MAX', pad+150, 12);
   const cur=weeks[7], prev=weeks[6], d1=cur.tot-prev.tot, d2=cur.pr-prev.pr;
-  const firstK=S.sessions.length?S.sessions[S.sessions.length-1].d:todayKey(); const days=Math.max(1,Math.round((new Date(todayKey())-new Date(firstK))/86400000)+1);
-  $('delta').innerHTML=`<div><b>${cur.tot}</b>이번 주 총 반복 <span class="${d1>=0?'up':'dn'}">${d1>=0?'+':''}${d1}</span></div><div><b>${cur.pr}</b>이번 주 세트 최고 <span class="${d2>=0?'up':'dn'}">${d2>=0?'+':''}${d2}</span></div><div><b>${days}D</b>수련 시작 후 · ${S.sessions.length}일 출석</div>`;
+  const firstK=e.sessions.length?e.sessions[e.sessions.length-1].d:todayKey(); const days=Math.max(1,Math.round((new Date(todayKey())-new Date(firstK))/86400000)+1);
+  $('delta').innerHTML=`<div><b>${cur.tot}</b>이번 주 총 반복 <span class="${d1>=0?'up':'dn'}">${d1>=0?'+':''}${d1}</span></div><div><b>${cur.pr}</b>이번 주 세트 최고 <span class="${d2>=0?'up':'dn'}">${d2>=0?'+':''}${d2}</span></div><div><b>${days}D</b>수련 시작 후 · ${e.sessions.length}일 출석</div>`;
 }
 function renderMot(){
-  S.vow=S.vow||{}; const v=S.vow;
+  const e=E(), Xd=X(); e.vow=e.vow||{}; const v=e.vow;
   ['vowName','vowDate','vowReps','vowWhy'].forEach(id=>{ const el=$(id); if(document.activeElement!==el) el.value=v[id.slice(3).toLowerCase()]??''; });
+  $('vowEx').textContent=Xd.n;
   const P=$('vowProg');
-  if(v.reps){ const need=Math.max(0,v.reps-S.pr), pct=Math.min(100,S.pr/v.reps*100); let days=null; if(v.date) days=Math.ceil((new Date(v.date+'T00:00:00')-new Date(todayKey()+'T00:00:00'))/86400000);
-    let line='현재 최고 <b>'+S.pr+'회</b> → 목표 <b>'+v.reps+'회</b>'+(need?' · 앞으로 <b>'+need+'개</b>':' · <b>달성!</b>'); if(days!==null) line+= days>=0?' · <b>D-'+days+'</b>'+(need&&days>0?' (주당 약 '+(need/Math.max(1,days/7)).toFixed(1)+'개씩)':''):' · 기한 지남 — 다시 정하자';
+  if(v.reps){ const need=Math.max(0,v.reps-e.pr), pct=Math.min(100,e.pr/v.reps*100); let days=null; if(v.date) days=Math.ceil((new Date(v.date+'T00:00:00')-new Date(todayKey()+'T00:00:00'))/86400000);
+    let line='현재 최고 <b>'+e.pr+'회</b> → 목표 <b>'+v.reps+'회</b>'+(need?' · 앞으로 <b>'+need+'개</b>':' · <b>달성!</b>'); if(days!==null) line+= days>=0?' · <b>D-'+days+'</b>'+(need&&days>0?' (주당 약 '+(need/Math.max(1,days/7)).toFixed(1)+'개씩)':''):' · 기한 지남 — 다시 정하자';
     P.innerHTML=line+'<div class="bar" style="--c:var(--gold);margin-top:8px"><i style="width:'+pct+'%"></i></div>'; }
   else P.innerHTML='목표 횟수와 기한을 적으면 남은 거리와 속도를 계산해 준다.';
-  S.miles=S.miles||{}; let nm=false; $('miles').innerHTML=MILES.map(m=>{ const on=!!S.miles[m.k]; const next=!on&&!nm; if(next) nm=true; return `<div class="mi ${on?'on':''} ${next?'next':''}"><span class="box">${on?'✓':''}</span><span class="t">${m.t}</span><span class="d">${on?S.miles[m.k].slice(2):(next?'NEXT':'')}</span></div>`; }).join('');
-  const days=new Set(S.sessions.map(s=>s.d)); const today=new Date(); const start=new Date(today); start.setDate(today.getDate()-((today.getDay()+6)%7)-28);
-  let html=['M','T','W','T','F','S','S'].map(d=>'<div class="h">'+d+'</div>').join(''); for(let i=0;i<35;i++){ const d=new Date(start); d.setDate(start.getDate()+i); const k=fmtK(d); html+=`<div class="c ${days.has(k)?'on':''} ${k===todayKey()?'today':''} ${d>today?'future':''}">${d.getDate()}</div>`; } $('cal').innerHTML=html;
+  e.miles=e.miles||{}; let nm=false; $('miles').innerHTML=Xd.MILES.map(m=>{ const on=!!e.miles[m.k]; const next=!on&&!nm; if(next) nm=true; return `<div class="mi ${on?'on':''} ${next?'next':''}"><span class="box">${on?'✓':''}</span><span class="t">${m.t}</span><span class="d">${on?e.miles[m.k].slice(2):(next?'NEXT':'')}</span></div>`; }).join('');
+  const dp=new Set(S.ex.pull.sessions.map(s=>s.d)), dr=new Set(S.ex.ring.sessions.map(s=>s.d)); const today=new Date(); const start=new Date(today); start.setDate(today.getDate()-((today.getDay()+6)%7)-28);
+  let html=['M','T','W','T','F','S','S'].map(d=>'<div class="h">'+d+'</div>').join(''); for(let i=0;i<35;i++){ const d=new Date(start); d.setDate(start.getDate()+i); const k=fmtK(d); const p=dp.has(k), r=dr.has(k); html+=`<div class="c ${p&&r?'on both':p?'on':r?'on ring':''} ${k===todayKey()?'today':''} ${d>today?'future':''}">${d.getDate()}</div>`; } $('cal').innerHTML=html;
 }
-['vowName','vowDate','vowReps','vowWhy'].forEach(id=>$(id).addEventListener('change',e=>{ S.vow=S.vow||{}; const k=id.slice(3).toLowerCase(); S.vow[k]= id==='vowReps'?(parseInt(e.target.value)||''):e.target.value.trim(); if(id==='vowReps'||id==='vowDate') S.vow.done=''; persist(); render(); }));
-function renderHist(){ $('hist').innerHTML=S.sessions.length?S.sessions.slice(0,40).map(s=>`<tr><td class="p8" style="font-size:9px">${s.d.slice(5)}</td><td style="color:var(--muted)">${s.sets.join(' · ')}</td><td class="r">${s.total}</td></tr>`).join(''):'<tr><td colspan="3" class="empty">첫 기록을 기다리는 중.</td></tr>'; }
+['vowName','vowDate','vowReps','vowWhy'].forEach(id=>$(id).addEventListener('change',ev=>{ const e=E(); e.vow=e.vow||{}; const k=id.slice(3).toLowerCase(); e.vow[k]= id==='vowReps'?(parseInt(ev.target.value)||''):ev.target.value.trim(); if(id==='vowReps'||id==='vowDate') e.vow.done=''; persist(); render(); }));
+function renderHist(){ const e=E(); $('hist').innerHTML=e.sessions.length?e.sessions.slice(0,40).map(s=>`<tr><td class="p8" style="font-size:9px">${s.d.slice(5)}</td><td style="color:var(--muted)">${s.sets.join(' · ')}</td><td class="r">${s.total}</td></tr>`).join(''):'<tr><td colspan="3" class="empty">첫 기록을 기다리는 중.</td></tr>'; }
 
 // ---------- controls ----------
+document.querySelectorAll('.exsw button').forEach(b=>b.onclick=()=>{ if(S.cur===b.dataset.ex) return; S.cur=b.dataset.ex; reps=E().target; persist(); render(); greet(); });
 $('logBtn').onclick=logSet;
 $('inc').onclick=()=>{ reps=Math.min(99,reps+1); $('reps').textContent=reps; };
 $('dec').onclick=()=>{ reps=Math.max(1,reps-1); $('reps').textContent=reps; };
-$('optTarget').addEventListener('change',e=>{ S.target=Math.max(1,parseInt(e.target.value)||1); reps=S.target; persist(); render(); });
-$('optSets').addEventListener('change',e=>{ S.sets=Math.max(1,parseInt(e.target.value)||1); persist(); render(); });
-document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT') return; if($('ov').classList.contains('on')){ if(['Enter','Escape',' '].includes(e.key)){ e.preventDefault(); $('ovOk').click(); } return; } if(e.key==='Enter'){ e.preventDefault(); logSet(); } else if(e.key==='ArrowUp'){ e.preventDefault(); $('inc').click(); } else if(e.key==='ArrowDown'){ e.preventDefault(); $('dec').click(); } });
+$('optTarget').addEventListener('change',ev=>{ E().target=Math.max(1,parseInt(ev.target.value)||1); reps=E().target; persist(); render(); });
+$('optSets').addEventListener('change',ev=>{ E().sets=Math.max(1,parseInt(ev.target.value)||1); persist(); render(); });
+document.addEventListener('keydown',ev=>{ if(ev.target.tagName==='INPUT') return; if($('ov').classList.contains('on')){ if(['Enter','Escape',' '].includes(ev.key)){ ev.preventDefault(); $('ovOk').click(); } return; } if(ev.key==='Enter'){ ev.preventDefault(); logSet(); } else if(ev.key==='ArrowUp'){ ev.preventDefault(); $('inc').click(); } else if(ev.key==='ArrowDown'){ ev.preventDefault(); $('dec').click(); } });
 render();
-(function greet(){ const t=todaySets(); const idle=S.lastSession?Math.floor((Date.now()-new Date(S.lastSession).getTime())/86400000):0;
-  if(reinforced) sys('경고. 7일 이상 공백. 적이 '+reinforced+' 증원됐다. 오늘 되찾는다.');
-  else if(idle>=3&&!t.length) sys('복귀 감지. '+idle+'일 만이다. 가볍게 한 세트부터.');
-  else if(!t.length) sys('일일 퀘스트 대기 중. 5세트. 첫 세트를 기록하라.');
-  else if(t.length>=S.sets) sys('오늘 퀘스트 완료. 추가 세트는 보너스다.');
-  else sys('진행 중. '+(S.sets-t.length)+'세트 남았다.');
-})();
-if(reinforced) setTimeout(()=>overlay('ENEMY REINFORCED','+'+reinforced,'일주일 넘게 비운 사이 적이 병력을 보충했다. 오늘 다시 밀어낸다.', bossPixel(S.war.t)),600);
+function greet(){ const e=E(), Xd=X(); const t=todaySets(e); const idle=e.lastSession?Math.floor((Date.now()-new Date(e.lastSession).getTime())/86400000):0;
+  if(reinforced[S.cur]) sys('경고. '+Xd.n+' 전선 7일 이상 공백. 적이 '+reinforced[S.cur]+' 증원됐다. 오늘 되찾는다.');
+  else if(idle>=3&&!t.length) sys(Xd.n+' 복귀 감지. '+idle+'일 만이다. 가볍게 한 세트부터.');
+  else if(!t.length) sys(Xd.n+' 일일 퀘스트 대기 중. '+e.sets+'세트. 첫 세트를 기록하라.');
+  else if(t.length>=e.sets) sys(Xd.n+' 오늘 퀘스트 완료. 추가 세트는 보너스다.');
+  else sys(Xd.n+' 진행 중. '+(e.sets-t.length)+'세트 남았다.');
+}
+greet();
+if(migrated) setTimeout(()=>overlay('DATA MERGED','두 전선 통합','철봉 수련장부와 링의 순례길 기록을 하나로 합쳤다.\n턱걸이 '+S.ex.pull.total+'회 · 링딥스 '+S.ex.ring.total+'회.\n주인공은 한 명, 전선은 둘.', heroPixel(levelOf(heroTotal()))),500);
+else { const rk=EXK.find(k=>reinforced[k]); if(rk) setTimeout(()=>overlay('ENEMY REINFORCED','+'+reinforced[rk],EXD[rk].n+' 전선을 일주일 넘게 비운 사이 적이 병력을 보충했다. 오늘 다시 밀어낸다.', bossPixel(S.ex[rk].war.t+(rk==='ring'?100:0))),600); }
+
 })();
 </script>
+
 
 <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').catch(()=>{});});}</script>
 </body>
