@@ -198,6 +198,35 @@ td.r{text-align:right;font-family:"Press Start 2P";font-size:10px;color:var(--cy
 .exsw small{display:none}
 .cal .c.ring{background:#b8384e !important}
 .cal .c.both{background:linear-gradient(135deg,var(--accent) 50%,#b8384e 50%) !important}
+.win.violet{--line:#6a4bb0;--panel2:#21173b}
+.lifeline{font-size:14px;line-height:1.7;color:var(--ink);background:#0a0d1c;box-shadow:inset 0 0 0 2px var(--line);padding:10px 12px}
+.lifeline b{color:var(--gold)}
+.logbtn.alt{background:linear-gradient(180deg,#8a4bd8,#5a2aa0);box-shadow:0 0 0 3px #b07cff,5px 5px 0 3px #000;font-family:inherit;font-weight:900;font-size:16px;letter-spacing:0}
+.opts{display:grid;gap:6px;margin-top:10px}
+.opt{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;background:#0a0d1c;box-shadow:inset 0 0 0 2px var(--line);padding:10px 12px;font-size:14px;color:var(--ink)}
+.opt.on{box-shadow:inset 0 0 0 2px var(--gold);color:var(--gold)}
+.chips2{display:flex;gap:6px;flex-wrap:wrap}
+.chip2{background:#0a0d1c;box-shadow:inset 0 0 0 2px var(--line);padding:8px 12px;font-size:13px;color:var(--ink)}
+.chip2.on{background:var(--panel2);box-shadow:inset 0 0 0 2px var(--gold);color:var(--gold);font-weight:900}
+.fc{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
+.fc .clock{font-family:"Press Start 2P";font-size:26px;color:#fff;text-shadow:3px 3px 0 #000,0 0 14px var(--violet)}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px;align-items:end;height:64px}
+.week div{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;height:100%;font-size:10px;color:var(--faint)}
+.week i{display:block;width:100%;background:var(--violet);min-height:2px}
+.week i.good{background:var(--green)}.week i.none{background:var(--line);opacity:.4}
+.lifestat{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.lifestat div{background:#0a0d1c;box-shadow:inset 0 0 0 2px var(--line);padding:8px;font-size:11.5px;color:var(--muted);text-align:center}
+.lifestat b{display:block;font-family:"Press Start 2P";font-size:12px;color:var(--cyan);margin-bottom:4px}
+.closet{display:grid;grid-template-columns:132px 1fr;gap:14px;align-items:start}
+@media (max-width:520px){.closet{grid-template-columns:1fr;justify-items:center}}
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:10px;width:100%}
+.item{background:#0a0d1c;box-shadow:inset 0 0 0 2px var(--line);padding:6px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--ink);position:relative}
+.item svg{width:48px;height:64px}
+.item small{font-family:"Press Start 2P";font-size:7px;color:var(--muted)}
+.item.on{box-shadow:inset 0 0 0 3px var(--gold)}
+.item.lock{opacity:.45}.item.lock svg{filter:grayscale(1) brightness(.6)}
+.item.buy small{color:var(--gold)}
+.hint2{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.6}
 </style>
 
 <div class="wrap">
@@ -223,6 +252,18 @@ td.r{text-align:right;font-family:"Press Start 2P";font-size:10px;color:var(--cy
     </div>
   </div>
 
+  <div class="win">
+    <div class="ttl"><b>WARDROBE</b><span>옷장</span><small id="goldLbl"></small></div>
+    <div class="closet">
+      <div class="heroBox" id="closetHero"></div>
+      <div style="min-width:0;width:100%">
+        <div class="chips2" id="slotTabs"></div>
+        <div class="items" id="items"></div>
+      </div>
+    </div>
+    <div class="hint2">EXP를 얻으면 같은 만큼 GOLD가 쌓인다(턱걸이 1회 = 1G, 현생 수련도 포함). 레벨이 열어 주고 GOLD로 산다. 옷 욕심은 여기서 풀고, 현실 장바구니는 닫아 둔다.</div>
+  </div>
+
   <div class="win gold quest">
     <div class="ttl"><b>QUEST</b><span>일일 퀘스트</span><small id="todayLbl"></small></div>
     <div class="q"><div class="qt"><span id="qName">턱걸이</span> <em id="qTarget"></em>회 × <em id="qSets"></em>세트</div><div class="goal">목표 <input type="number" id="optTarget" min="1" max="60"> × <input type="number" id="optSets" min="1" max="10"></div></div>
@@ -235,6 +276,25 @@ td.r{text-align:right;font-family:"Press Start 2P";font-size:10px;color:var(--cy
     <button class="logbtn" id="logBtn">SET COMPLETE!</button>
     <div class="sets" id="today"></div>
     <div class="reward" id="reward"></div>
+  </div>
+
+  <div class="win violet">
+    <div class="ttl"><b>LIFE</b><span>현생 수련</span><small id="lifeMeta"></small></div>
+    <div class="lifeline" id="lifeLine"></div>
+    <button class="logbtn alt" id="urgeBtn">당근·쿠팡·무신사 켜려던 참이다</button>
+    <div id="urgeBox" hidden>
+      <div class="hint2" style="margin-top:12px">살 게 정해져 있으면 그것만 사고 나온다. 아니라면 — 지금 손이 심심한 거다. 5분짜리 하나를 고른다.</div>
+      <div class="opts" id="urgeOpts"></div>
+      <button class="logbtn" id="urgeDone" disabled>했다</button>
+    </div>
+    <div class="subh">FOCUS · 폰 없이 집중</div>
+    <div class="fc"><div class="clock" id="fcClock">25:00</div><div><div class="chips2" id="fcLen"><button class="chip2" data-m="25">25분 · +10</button><button class="chip2" data-m="50">50분 · +25</button></div><div class="hint2" style="margin-top:6px" id="fcHint">시작을 누르고 폰을 금욕상자에 넣는다. 돌아와서 보상을 받는다.</div></div></div>
+    <button class="logbtn" id="fcBtn">FOCUS START</button>
+    <div class="subh">SCROLL REPORT · 오늘 의미 없이 넘긴 시간</div>
+    <div class="chips2" id="scrBtns"><button class="chip2" data-s="0">0분 · +25</button><button class="chip2" data-s="30">30분 이하 · +15</button><button class="chip2" data-s="60">1시간쯤</button><button class="chip2" data-s="120">2시간 이상</button></div>
+    <div class="week" id="scrWeek"></div>
+    <div class="lifestat" id="lifeStat"></div>
+    <div class="hint2">자기 전에 한 번, 정직하게 누른다. 속이면 레벨은 오르지만 너는 안 오른다.</div>
   </div>
 
   <div class="win red war">
@@ -342,25 +402,72 @@ const HERO_BASE = [
 ".....kkkkk..kkkkk.......",
 "........................",
 ];
+const ITEMS=[
+ {id:'band',slot:'head',n:'붉은 머리띠',lv:3,g:0},
+ {id:'cap',slot:'head',n:'블랙 볼캡',lv:4,g:60,c:['#15161c','#2c2e3a']},
+ {id:'beanie',slot:'head',n:'차콜 비니',lv:6,g:90,c:['#3a3d4a','#5a5f72']},
+ {id:'crown',slot:'head',n:'왕관',lv:30,g:0},
+ {id:'tank',slot:'top',n:'수련 민소매',lv:2,g:30,c:['#e9e9f0','#c4c6d4']},
+ {id:'tee_w',slot:'top',n:'화이트 반팔',lv:3,g:60,c:['#f1f2f7','#cfd2de']},
+ {id:'tee_k',slot:'top',n:'블랙 반팔',lv:3,g:60,c:['#1e2029','#12131a']},
+ {id:'long_n',slot:'top',n:'네이비 긴팔',lv:5,g:120,c:['#27356a','#1a244b']},
+ {id:'hood',slot:'top',n:'그레이 후디',lv:7,g:200,c:['#8d90a0','#6f7284']},
+ {id:'knit',slot:'top',n:'버건디 니트',lv:9,g:260,c:['#7a2238','#571728']},
+ {id:'dobok',slot:'top',n:'흰 도복',lv:10,g:300,c:['#f4f4f8','#cfd2de']},
+ {id:'pants_n',slot:'bottom',n:'네이비 팬츠',lv:1,g:0,c:['#2b3a67']},
+ {id:'shorts',slot:'bottom',n:'수련 반바지',lv:2,g:20,c:['#2b3a67']},
+ {id:'pants_k',slot:'bottom',n:'블랙 슬랙스',lv:4,g:80,c:['#16171d']},
+ {id:'pants_c',slot:'bottom',n:'차콜 카고',lv:6,g:120,c:['#454957']},
+ {id:'pants_w',slot:'bottom',n:'화이트 데님',lv:8,g:160,c:['#dfe2ea']},
+ {id:'boots',slot:'shoes',n:'가죽 부츠',lv:1,g:0,c:['#3b2a20']},
+ {id:'sneak_w',slot:'shoes',n:'흰 스니커즈',lv:3,g:70,c:['#eeeef5']},
+ {id:'sneak_r',slot:'shoes',n:'레드 러너',lv:6,g:120,c:['#d23b4b']},
+ {id:'derby',slot:'shoes',n:'블랙 더비',lv:8,g:150,c:['#0e0e12']},
+ {id:'armor',slot:'outer',n:'강철 흉갑',lv:8,g:0},
+ {id:'coat',slot:'outer',n:'블랙 롱코트',lv:9,g:350,c:['#191a22','#2a2c38']},
+ {id:'gloves',slot:'gear',n:'수련 장갑',lv:5,g:0},
+ {id:'pauld',slot:'gear',n:'견갑',lv:12,g:0},
+ {id:'cape',slot:'gear',n:'붉은 망토',lv:15,g:0},
+ {id:'aura',slot:'gear',n:'오라',lv:20,g:0},
+];
+const ITEM=Object.fromEntries(ITEMS.map(x=>[x.id,x]));
+const SLOTS=[['top','상의'],['bottom','하의'],['shoes','신발'],['head','머리'],['outer','겉옷'],['gear','장비']];
+function legacyWear(lv){ return {head:lv>=30?'crown':lv>=3?'band':null, top:null, bottom:'pants_n', shoes:'boots', outer:lv>=8?'armor':null, gear:['gloves','pauld','cape','aura'].filter(id=>lv>=ITEM[id].lv)}; }
 function heroPixel(lv, cfg){
   cfg=cfg||{}; const rows=HERO_BASE.map(r=>r.split(''));
+  const W=cfg.wear||(window.__wear&&window.__wear())||legacyWear(lv), gear=W.gear||[];
   const set=(x,y,c)=>{ if(rows[y]&&rows[y][x]!==undefined) rows[y][x]=c; };
-  // 헤어밴드 Lv3
-  if(lv>=3){ for(let x=7;x<=16;x++) set(x,4,'H'); }
-  // 장갑 Lv5
-  if(lv>=5){ [[2,20],[3,20],[19,19],[20,19],[2,19],[20,18]].forEach(([x,y])=>set(x,y,'g')); for(let x=2;x<=4;x++) set(x,19,'g'); for(let x=18;x<=20;x++) set(x,18,'g'); }
-  // 갑옷(가슴판) Lv8
-  if(lv>=8){ for(let y=14;y<=18;y++) for(let x=8;x<=15;x++){ if(rows[y][x]==='s'||rows[y][x]==='d') rows[y][x]=(x===8||x===15||y===18)?'a':'A'; } set(11,15,'y'); set(12,15,'y'); }
-  // 견갑 Lv12
-  if(lv>=12){ for(let x=2;x<=6;x++){ set(x,12,'A'); set(x,13,'a'); } for(let x=17;x<=21;x++){ set(x,12,'A'); set(x,13,'a'); } }
-  // 망토 Lv15 (뒤쪽 배경으로)
+  const skin=(x,y)=>rows[y]&&(rows[y][x]==='s'||rows[y][x]==='d');
+  const dye=(x0,x1,y0,y1,L,D)=>{ for(let y=y0;y<=y1;y++) for(let x=x0;x<=x1;x++) if(skin(x,y)) rows[y][x]=rows[y][x]==='s'?L:D; };
+  const pal={k:'#1a1026',s:cfg.skin||'#f2c9a2',d:cfg.shade||'#d9a077',h:cfg.hair||'#1c1c2e',e:'#ffffff',p:'#2b3a67',b:'#3b2a20',A:'#4cc9ff',a:'#2f7dff',H:'#ff3b5c',g:'#ffd166',y:'#ffd166',B:'#111118'};
   let pre='';
-  if(lv>=15){ pre='<path d="M3 12 L21 12 L23 30 L1 30 Z" fill="'+(cfg.cape||'#7a1b2e')+'"/><path d="M5 14 L19 14 L20 29 L4 29 Z" fill="'+(cfg.cape2||'#a3283f')+'"/>'; }
-  // 오라 Lv20
-  if(lv>=20){ pre='<rect x="0" y="0" width="24" height="32" fill="url(#aura)"/>'+pre; }
-  // 왕관 Lv30
-  if(lv>=30){ for(let x=8;x<=15;x++) set(x,0,'y'); [[8,-1],[11,-1],[15,-1]].forEach(()=>{}); set(8,1,'y'); set(11,1,'y'); set(15,1,'y'); }
-  const pal={k:'#1a1026',s:cfg.skin||'#f2c9a2',d:cfg.shade||'#d9a077',h:cfg.hair||'#1c1c2e',e:'#ffffff',p:cfg.pants||'#2b3a67',b:'#3b2a20',A:cfg.armor||'#4cc9ff',a:cfg.armor2||'#2f7dff',H:'#ff3b5c',g:'#ffd166',y:'#ffd166'};
+  // 상의
+  const top=ITEM[W.top]; if(top){ pal.F=top.c[0]; pal.f=top.c[1];
+    if(top.id==='tank'){ dye(6,16,14,21,'F','f'); dye(7,8,12,13,'F','f'); dye(15,16,12,13,'F','f'); }
+    else { dye(5,17,14,21,'F','f'); dye(2,8,12,13,'F','f'); dye(14,20,12,13,'F','f'); dye(1,4,14,15,'F','f'); dye(18,21,14,15,'F','f');
+      if(top.id!=='tee_w'&&top.id!=='tee_k'){ dye(1,3,16,18,'F','f'); dye(19,21,16,18,'F','f'); }
+      if(top.id==='hood'){ pre+='<rect x="5" y="2" width="14" height="10" fill="'+top.c[1]+'"/>'; for(let x=9;x<=14;x++) if(rows[11][x]==='d') rows[11][x]='f'; }
+      if(top.id==='knit'){ for(let x=10;x<=12;x++){ if(rows[12][x]==='d') rows[12][x]='f'; } }
+      if(top.id==='dobok'){ [[11,13],[10,14],[9,15],[12,14],[13,15]].forEach(([x,y])=>set(x,y,'f')); for(let x=6;x<=15;x++) if(rows[21][x]==='F'||rows[21][x]==='f') rows[21][x]='B'; }
+    } }
+  // 하의 · 신발
+  const bot=ITEM[W.bottom]||ITEM.pants_n; pal.p=bot.c[0]; if(bot.id==='shorts'){ for(let y=25;y<=27;y++) for(let x=0;x<24;x++) if(rows[y][x]==='p') rows[y][x]='s'; }
+  const sh=ITEM[W.shoes]||ITEM.boots; pal.b=sh.c[0];
+  // 겉옷
+  if(W.outer==='armor'){ for(let y=14;y<=18;y++) for(let x=8;x<=15;x++){ if('sdFf'.includes(rows[y][x])) rows[y][x]=(x===8||x===15||y===18)?'a':'A'; } set(11,15,'y'); set(12,15,'y'); }
+  if(W.outer==='coat'){ const c=ITEM.coat.c; pal.O=c[0]; pal.o=c[1]; pre+='<path d="M4 12 L20 12 L21 29 L3 29 Z" fill="'+c[0]+'"/>';
+    const paint=(x0,x1,y0,y1)=>{ for(let y=y0;y<=y1;y++) for(let x=x0;x<=x1;x++) if('sdFf'.includes(rows[y][x])) rows[y][x]=(x===x0||x===x1)?'o':'O'; };
+    paint(2,8,12,13); paint(14,20,12,13); paint(1,4,14,15); paint(18,21,14,15); paint(1,3,16,18); paint(19,21,16,18); paint(5,7,14,21); paint(15,17,14,21); }
+  // 장비
+  if(gear.includes('gloves')){ [[2,20],[3,20],[19,19],[20,19],[2,19],[20,18]].forEach(([x,y])=>set(x,y,'g')); for(let x=2;x<=4;x++) set(x,19,'g'); for(let x=18;x<=20;x++) set(x,18,'g'); }
+  if(gear.includes('pauld')){ for(let x=2;x<=6;x++){ set(x,12,'A'); set(x,13,'a'); } for(let x=17;x<=21;x++){ set(x,12,'A'); set(x,13,'a'); } }
+  if(gear.includes('cape')){ pre='<path d="M3 12 L21 12 L23 30 L1 30 Z" fill="#7a1b2e"/><path d="M5 14 L19 14 L20 29 L4 29 Z" fill="#a3283f"/>'+pre; }
+  if(gear.includes('aura')){ pre='<rect x="0" y="0" width="24" height="32" fill="url(#aura)"/>'+pre; }
+  // 머리
+  const hd=ITEM[W.head]; if(hd){ if(hd.id==='band'){ for(let x=7;x<=16;x++) set(x,4,'H'); }
+    else if(hd.id==='crown'){ for(let x=8;x<=15;x++) set(x,0,'y'); set(8,1,'y'); set(11,1,'y'); set(15,1,'y'); }
+    else { pal.Q=hd.c[0]; pal.q=hd.c[1]; for(let y=1;y<=(hd.id==='cap'?3:4);y++) for(let x=0;x<24;x++) if(rows[y][x]==='h') rows[y][x]='Q';
+      if(hd.id==='cap'){ for(let x=7;x<=19;x++) set(x,4,x>16?'Q':'q'); } else { for(let x=7;x<=16;x++) set(x,4,'q'); } } }
   const defs='<defs><radialGradient id="aura"><stop offset="0" stop-color="#4cc9ff" stop-opacity=".55"/><stop offset="1" stop-color="#4cc9ff" stop-opacity="0"/></radialGradient></defs>';
   return px(rows.map(r=>r.join('')), pal, {pre:defs+pre, cls:'hero-px'});
 }
@@ -473,6 +580,10 @@ let migrated=false;
 const E = () => S.ex[S.cur];
 const X = () => EXD[S.cur];
 const heroTotal = () => EXK.reduce((a,k)=>a+S.ex[k].total,0);
+function ensureLife(){ S.life=S.life||{exp:0,log:{},fc:null}; S.life.log=S.life.log||{}; S.own=S.own||[]; S.spent=S.spent||0; }
+window.__wear=()=>S.wear;
+const heroExp = () => heroTotal()+((S.life&&S.life.exp)||0);
+const gold = () => Math.max(0,heroExp()-(S.spent||0));
 let db=null, docRef=null, wT=null, applying=false;
 function persist(){ S.updatedAt=Date.now(); try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} if(docRef&&!applying){ clearTimeout(wT); wT=setTimeout(async()=>{ try{ await docRef.set(JSON.parse(JSON.stringify(S))); $('syncMsg').textContent='CLOUD SYNC OK'; }catch(e){ $('syncMsg').textContent='LOCAL SAVE (SYNC FAIL)'; } },600);} }
 function adopt(r){ if(!r.ex){ const n={cur:'pull',ex:{pull:fromOld(r,'pull'),ring:S.ex.ring||fromOld(window.__RING_SEED__||null,'ring')},started:r.started||S.started,updatedAt:r.updatedAt||0}; r=n; } S=Object.assign(S,r); EXK.forEach(k=>{ if(!S.ex[k]) S.ex[k]=freshEx(k); if(!S.ex[k].war) rebuildWar(S.ex[k]); }); }
@@ -498,11 +609,11 @@ function streak(e){ const weeks=new Set(e.sessions.map(x=>weekKey(x.d))); let st
 function checkMiles(e,Xd){ e.miles=e.miles||{}; const fresh=[]; Xd.MILES.forEach(m=>{ if(!e.miles[m.k]&&m.f(e)){ e.miles[m.k]=todayKey(); fresh.push(m); } }); return fresh; }
 function logSet(){
   const e=E(), Xd=X(), r=Math.max(1,reps), rec=todayRec(e);
-  const lvBefore=levelOf(heroTotal()), rankBefore=rankOf(Xd,e.pr)[1];
+  const lvBefore=levelOf(heroExp()), rankBefore=rankOf(Xd,e.pr)[1];
   rec.sets.push(r); rec.total+=r; e.total+=r; e.lastSession=todayKey(); e.sessions=e.sessions.slice(0,200);
   const isPR=r>e.pr; if(isPR) e.pr=r;
   const dmg=r+powerAt(lvBefore); const ev=applyDamage(e.war,dmg); warHit(dmg);
-  const lvAfter=levelOf(heroTotal()), newAlly=alliesAt(lvAfter).length>alliesAt(lvBefore).length, rankAfter=rankOf(Xd,e.pr)[1];
+  const lvAfter=levelOf(heroExp()), newAlly=alliesAt(lvAfter).length>alliesAt(lvBefore).length, rankAfter=rankOf(Xd,e.pr)[1];
   let questDone=false; if(rec.sets.length>=e.sets && rec.sets.every(x=>x>=e.target) && e.bumpedDay!==rec.d){ e.target+=1; e.bumpedDay=rec.d; questDone=true; }
   const fresh=checkMiles(e,Xd);
   const vowHit = e.vow&&e.vow.reps&&r>=e.vow.reps&&!e.vow.done; if(vowHit) e.vow.done=todayKey();
@@ -512,7 +623,7 @@ function logSet(){
   const queue=[];
   if (rankAfter!==rankBefore) queue.push(['RANK UP', Xd.n+' '+rankAfter+' 등급', '한 세트 '+e.pr+'회. 「'+rankOf(Xd,e.pr)[2]+'」\n등급은 한 세트 최고 기록으로 정해진다.', heroPixel(lvAfter)]);
   if (vowHit) queue.push(['VOW FULFILLED', e.vow.reps+'회 달성', (e.vow.name||'')+' — 적어 둔 대로 해냈다.\n'+(e.vow.why||'')+'\n새 서약을 적을 시간이다.', null]);
-  if (lvAfter>lvBefore) queue.push(['LEVEL UP', 'LV.'+lvAfter, '칭호 · '+titleOf(lvAfter)+'\n턱걸이+링딥스 누적 '+heroTotal()+'회. 어제의 너보다 강하다.', heroPixel(lvAfter)]);
+  if (lvAfter>lvBefore) queue.push(['LEVEL UP', 'LV.'+lvAfter, '칭호 · '+titleOf(lvAfter)+'\n몸 '+heroTotal()+' + 현생 '+((S.life&&S.life.exp)||0)+' EXP. 어제의 너보다 강하다.', heroPixel(lvAfter)]);
   if (newAlly){ const a=alliesAt(lvAfter).slice(-1)[0]; queue.push(['NEW ALLY', a.e+' '+a.n, a.r+' · 화력 +'+a.p+'\n이제 두 전선 모두에서 한 세트마다 '+powerAt(lvAfter)+'만큼 더 벤다.', null]); }
   if (conq) queue.push(['TERRITORY CLEAR', terrOf(Xd,conq.T).n, '「'+terrOf(Xd,conq.T).b+'」을(를) 베고 땅을 얻었다.\n다음 던전: '+terrOf(Xd,conq.T+1).n, bossPixel(conq.T+(S.cur==='ring'?100:0),{hurt:true})]);
   else if (bossUp) queue.push(['BOSS APPEARS', terrOf(Xd,bossUp.T).b, '졸병을 모두 밀어냈다. 이 땅의 군주가 직접 나섰다.\nHP '+T_BOSS(bossUp.T), bossPixel(bossUp.T+(S.cur==='ring'?100:0))]);
@@ -523,6 +634,71 @@ function logSet(){
   else { const m=Xd.SAY[Math.floor(Math.random()*Xd.SAY.length)]; sys(m.replace('{d}',dmg).replace('{t}',rec.total).replace('{r}',r)); }
   render();
 }
+// ---------- WARDROBE ----------
+let slotSel='top';
+function wearNow(){ const lv=levelOf(heroExp()); return S.wear||legacyWear(lv); }
+function owned(it,lv){ return it.g===0?lv>=it.lv:(S.own||[]).includes(it.id); }
+function renderCloset(){
+  ensureLife(); const lv=levelOf(heroExp()), W=wearNow();
+  $('goldLbl').textContent=gold()+' G';
+  $('closetHero').innerHTML=heroPixel(lv);
+  $('slotTabs').innerHTML=SLOTS.map(([k,n])=>`<button class="chip2 ${k===slotSel?'on':''}" data-slot="${k}">${n}</button>`).join('');
+  $('items').innerHTML=ITEMS.filter(x=>x.slot===slotSel).map(it=>{ const has=owned(it,lv), on=slotSel==='gear'?(W.gear||[]).includes(it.id):W[slotSel]===it.id, lock=lv<it.lv;
+    const pv=Object.assign({},W,{gear:(W.gear||[]).slice()}); if(slotSel==='gear'){ if(!pv.gear.includes(it.id)) pv.gear.push(it.id); } else pv[slotSel]=it.id;
+    return `<button class="item ${on?'on':''} ${lock?'lock':''} ${!has&&!lock?'buy':''}" data-item="${it.id}">${heroPixel(lv,{wear:pv})}<span>${it.n}</span><small>${lock?'LV.'+it.lv:has?(on?'착용 중':'보유'):it.g+' G'}</small></button>`; }).join('');
+}
+document.addEventListener('click',e=>{
+  const sb=e.target.closest('[data-slot]'); if(sb){ slotSel=sb.dataset.slot; renderCloset(); return; }
+  const ib=e.target.closest('[data-item]'); if(!ib) return; ensureLife();
+  const it=ITEM[ib.dataset.item], lv=levelOf(heroExp());
+  if(lv<it.lv){ sys('「'+it.n+'」은(는) LV.'+it.lv+'에 열린다. 지금 LV.'+lv+'.'); return; }
+  if(!owned(it,lv)){ if(gold()<it.g){ sys('GOLD가 '+(it.g-gold())+' 모자란다. 한 세트, 집중 한 번이면 가까워진다.'); return; } S.spent+=it.g; S.own.push(it.id); }
+  const W=JSON.parse(JSON.stringify(wearNow()));
+  if(it.slot==='gear'){ W.gear=W.gear||[]; W.gear=W.gear.includes(it.id)?W.gear.filter(x=>x!==it.id):W.gear.concat(it.id); }
+  else if(W[it.slot]===it.id){ W[it.slot]=it.slot==='bottom'?'pants_n':it.slot==='shoes'?'boots':null; }
+  else W[it.slot]=it.id;
+  S.wear=W; persist(); render();
+});
+
+// ---------- LIFE ----------
+const LIFE_LINES=['하루 <b>1시간 30분</b>의 스크롤은 1년이면 <b>547시간</b> — 꼬박 <b>23일</b>이다. 그 시간의 절반이면 턱걸이도, 성경 1독도, 영단어 3천 개도 된다.','쇼핑앱은 "살 것"이 아니라 "볼 것"을 판다. 끝이 없는 목록은 멈출 자리를 일부러 없앤 설계다. 멈출 자리는 네가 만든다.','지루함은 고장이 아니라 신호다. 뇌가 다음 일을 고르려는 순간이다. 그 자리를 피드에 내주지 않는다.','오늘 넘긴 상품 300개 중 내일 기억나는 건 없다. 오늘 한 세트, 오늘 외운 단어 열 개는 남는다.','현생이 본게임이다. 이 화면의 레벨은 네가 실제로 움직였다는 영수증일 뿐이다.','"세월을 아끼라 때가 악하니라" (엡 5:16)'];
+const URGE_OPTS=['턱걸이·링딥스 한 세트 (아래 퀘스트로)','영단어 10개','교재·책 2쪽','물 한 잔 + 스트레칭 1분','책상·방 정리 5분','기도 1분'];
+let urgePick=-1, urgeT=null, fcLen=25, fcT=null;
+function lifeDay(k){ ensureLife(); k=k||todayKey(); return S.life.log[k]||(S.life.log[k]={scroll:null,scrExp:0,focus:0,red:0}); }
+function gainLife(n,msg){ ensureLife(); const lvB=levelOf(heroExp()); S.life.exp+=n; const lvA=levelOf(heroExp()); persist();
+  if(lvA>lvB){ const fresh=ITEMS.filter(x=>x.lv>lvB&&x.lv<=lvA).map(x=>x.n); confetti(); overlay('LEVEL UP','LV.'+lvA,'칭호 · '+titleOf(lvA)+'\n현생 수련으로 올린 레벨이다.'+(fresh.length?'\n옷장에 새로 열림: '+fresh.join(', '):''),heroPixel(lvA)); }
+  else sys(msg+' +'+n+' EXP · +'+n+' G'); render(); }
+function renderLife(){
+  ensureLife(); const d=lifeDay(), now=new Date();
+  $('lifeLine').innerHTML=LIFE_LINES[(now.getDate()+now.getMonth())%LIFE_LINES.length];
+  $('lifeMeta').textContent='현생 EXP '+S.life.exp;
+  $('urgeOpts').innerHTML=URGE_OPTS.map((t,i)=>`<button class="opt ${i===urgePick?'on':''}" data-uo="${i}"><span>${t}</span><span>${i===urgePick?'▶':''}</span></button>`).join('');
+  document.querySelectorAll('#scrBtns .chip2').forEach(b=>b.classList.toggle('on',d.scroll!==null&&+b.dataset.s===d.scroll));
+  document.querySelectorAll('#fcLen .chip2').forEach(b=>b.classList.toggle('on',+b.dataset.m===fcLen));
+  let h='', saved=0, goodStreak=0, counting=true;
+  for(let i=6;i>=0;i--){ const dt=new Date(); dt.setDate(dt.getDate()-i); const r=S.life.log[fmtK(dt)]; const v=r&&r.scroll!==null&&r.scroll!==undefined?r.scroll:null; h+=`<div><i class="${v===null?'none':v<=30?'good':''}" style="height:${v===null?4:Math.max(6,Math.min(100,v/120*100))}%"></i>${'일월화수목금토'[dt.getDay()]}</div>`; }
+  $('scrWeek').innerHTML=h;
+  Object.values(S.life.log).forEach(r=>{ if(r.scroll!==null&&r.scroll!==undefined) saved+=Math.max(0,90-r.scroll); });
+  for(let i=0;i<400;i++){ const dt=new Date(); dt.setDate(dt.getDate()-i); const r=S.life.log[fmtK(dt)]; const ok=r&&r.scroll!==null&&r.scroll!==undefined&&r.scroll<=30; if(i===0&&!ok&&!(r&&r.scroll!==null&&r.scroll!==undefined)) continue; if(ok) goodStreak++; else break; }
+  const fcMin=Object.values(S.life.log).reduce((a,r)=>a+(r.focusMin||0),0);
+  $('lifeStat').innerHTML=`<div><b>${goodStreak}</b>30분 이하 연속일</div><div><b>${(saved/60).toFixed(1)}h</b>되찾은 시간 (평소 90분 기준)</div><div><b>${(fcMin/60).toFixed(1)}h</b>폰 없이 집중</div>`;
+  renderFocus();
+}
+$('urgeBtn').onclick=()=>{ const b=$('urgeBox'); b.hidden=!b.hidden; urgePick=-1; clearInterval(urgeT); $('urgeDone').disabled=true; $('urgeDone').textContent='했다'; renderLife(); };
+$('urgeOpts').onclick=e=>{ const b=e.target.closest('[data-uo]'); if(!b) return; urgePick=+b.dataset.uo; renderLife(); let left=60; clearInterval(urgeT); $('urgeDone').disabled=true; $('urgeDone').textContent='하는 중… '+left; urgeT=setInterval(()=>{ left--; if(left<=0){ clearInterval(urgeT); $('urgeDone').disabled=false; $('urgeDone').textContent='했다 · 앱은 안 켰다'; } else $('urgeDone').textContent='하는 중… '+left; },1000); };
+$('urgeDone').onclick=()=>{ const d=lifeDay(); d.red=(d.red||0)+1; $('urgeBox').hidden=true; urgePick=-1; if(d.red<=6) gainLife(5,'손을 돌렸다.'); else { persist(); sys('오늘 보상 한도(6회)는 찼다. 그래도 잘 돌렸다.'); render(); } };
+$('scrBtns').onclick=e=>{ const b=e.target.closest('[data-s]'); if(!b) return; const d=lifeDay(), v=+b.dataset.s, ex=v===0?25:v<=30?15:0; const delta=ex-(d.scrExp||0); d.scroll=v; d.scrExp=ex; if(delta>0) gainLife(delta, v===0?'오늘 피드에 내준 시간이 없다.':'30분 안에서 끊었다.'); else { S.life.exp=Math.max(0,S.life.exp+delta); persist(); sys(v>=60?'적었다. 적는 사람이 줄인다. 내일은 "켜려던 참" 버튼을 먼저 누른다.':'기록했다.'); render(); } };
+$('fcLen').onclick=e=>{ const b=e.target.closest('[data-m]'); if(!b||S.life.fc) return; fcLen=+b.dataset.m; renderLife(); };
+function renderFocus(){ const f=S.life.fc; clearInterval(fcT); const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+  if(!f){ $('fcClock').textContent=fmt(fcLen*60); $('fcBtn').textContent='FOCUS START'; $('fcBtn').className='logbtn'; return; }
+  const tick=()=>{ const left=Math.max(0,Math.round((f.start+f.mins*60000-Date.now())/1000)); $('fcClock').textContent=fmt(left); if(left<=0){ clearInterval(fcT); $('fcBtn').textContent='보상 받기'; $('fcBtn').className='logbtn done'; $('fcHint').textContent='끝까지 했다. 보상을 받는다.'; } else { $('fcBtn').textContent='포기'; $('fcBtn').className='logbtn'; } };
+  tick(); fcT=setInterval(tick,1000); }
+$('fcBtn').onclick=()=>{ ensureLife(); const f=S.life.fc;
+  if(!f){ S.life.fc={start:Date.now(),mins:fcLen}; persist(); $('fcHint').textContent='지금 폰을 금욕상자에 넣는다. 끝나고 돌아와서 이 화면을 연다.'; renderFocus(); return; }
+  const done=Date.now()>=f.start+f.mins*60000; S.life.fc=null;
+  if(done){ const d=lifeDay(); d.focus=(d.focus||0)+1; d.focusMin=(d.focusMin||0)+f.mins; $('fcHint').textContent='시작을 누르고 폰을 금욕상자에 넣는다. 돌아와서 보상을 받는다.'; if(d.focus<=6) gainLife(f.mins>=50?25:10,f.mins+'분 집중 완료.'); else { persist(); sys('오늘 집중 보상 한도(6회)는 찼다.'); render(); } }
+  else { persist(); sys('집중을 중단했다. 다음엔 25분부터.'); $('fcHint').textContent='시작을 누르고 폰을 금욕상자에 넣는다. 돌아와서 보상을 받는다.'; render(); } };
+
 let ovQueue=[];
 function runQueue(q){ ovQueue=q.slice(); nextOv(); }
 function nextOv(){ const q=ovQueue.shift(); if(!q){ $('ov').classList.remove('on'); return; } overlay(...q); }
@@ -534,14 +710,14 @@ function confetti(){ const cols=['#5fe3ff','#ffd23f','#ff4b5c','#4be08a','#b07cf
 
 // ---------- render ----------
 function render(){
-  const e=E(), Xd=X(), lv=levelOf(heroTotal()), rk=rankOf(Xd,e.pr), t=todaySets(e), sum=t.reduce((a,b)=>a+b,0);
+  const e=E(), Xd=X(), lv=levelOf(heroExp()), rk=rankOf(Xd,e.pr), t=todaySets(e), sum=t.reduce((a,b)=>a+b,0);
   document.querySelectorAll('.exsw button').forEach(b=>b.classList.toggle('on',b.dataset.ex===S.cur));
   const other=S.cur==='pull'?'ring':'pull'; const ot=todaySets(S.ex[other]).length; $('exNote').textContent=ot?EXD[other].n+' 오늘 '+ot+'세트 완료':EXD[other].n+' 오늘 미수행';
   $('reps').textContent=reps;
   $('hero').innerHTML=heroPixel(lv)+'<span class="rank">'+rk[1]+'</span>';
   const nm=(S.ex.pull.vow&&S.ex.pull.vow.name)||(S.ex.ring.vow&&S.ex.ring.vow.name)||'이름 없는 수련자';
   $('heroName').textContent=nm; $('heroLv').textContent='LV.'+lv; $('heroTitle').textContent='「'+titleOf(lv)+'」 · '+Xd.n+' '+rk[1]+'급 '+rk[2];
-  const inLv=heroTotal()-(lv-1)*LVL; $('expTxt').textContent=inLv+'/'+LVL+' (턱걸이 '+S.ex.pull.total+' + 링 '+S.ex.ring.total+')'; $('expFill').style.width=(inLv/LVL*100)+'%';
+  const inLv=heroExp()-(lv-1)*LVL; $('expTxt').textContent=inLv+'/'+LVL+' (턱걸이 '+S.ex.pull.total+' + 링 '+S.ex.ring.total+' + 현생 '+((S.life&&S.life.exp)||0)+')'; $('expFill').style.width=(inLv/LVL*100)+'%';
   $('stMeta').textContent='NO.'+S.started.replace(/-/g,'');
   $('lblTotal').textContent=Xd.n+' · 누적'; $('lblPR').textContent=Xd.n+' · 세트 최고';
   $('sTotal').textContent=e.total; $('sPR').textContent=e.pr; $('sStreak').textContent=streak(e); $('sTerr').textContent=S.ex.pull.war.conq.length+S.ex.ring.war.conq.length;
@@ -555,11 +731,11 @@ function render(){
   $('whyTtl').textContent=Xd.n+'을 하는 까닭'; $('howTtl').textContent=Xd.n+' 하는 법';
   $('whygrid').innerHTML=Xd.WHY.map((w,i)=>`<div class="w"><div class="rn">${String(i+1).padStart(2,'0')}</div><b>${w[0]}</b><p>${w[1]}</p></div>`).join(''); $('caution').innerHTML=Xd.CAUTION;
   $('howgrid').innerHTML=Xd.HOW.map((w,i)=>`<div class="w"><div class="rn">STEP ${i+1}</div><b>${w[0]}</b><p>${w[1]}</p></div>`).join('');
-  renderWar(); renderGrowth(); renderMot(); renderHist();
+  renderWar(); renderGrowth(); renderMot(); renderHist(); renderCloset(); renderLife();
 }
 function flagSVG(){ return px(["k.......","kwwwww..","kwrrrww.","kwrrrww.","kwwwww..","k.......","k.......","k......."],{k:'#3b2a20',w:'#ffffff',r:'#ff4b5c'}); }
 function renderWar(){
-  const e=E(), Xd=X(), w=e.war, lv=levelOf(heroTotal()), al=alliesAt(lv), pw=powerAt(lv), nx=nextAlly(lv), off=S.cur==='ring'?100:0;
+  const e=E(), Xd=X(), w=e.war, lv=levelOf(heroExp()), al=alliesAt(lv), pw=powerAt(lv), nx=nextAlly(lv), off=S.cur==='ring'?100:0;
   const cur=terrOf(Xd,w.t), mm=T_MIN(w.t), bh=T_BOSS(w.t), bossPhase=w.m>=mm;
   $('warLbl').textContent=Xd.en+' · TERRITORY '+w.conq.length+'/'+Xd.TERR.length;
   const total=Math.max(Xd.TERR.length,w.t+1); let html='';
@@ -627,7 +803,7 @@ function greet(){ const e=E(), Xd=X(); const t=todaySets(e); const idle=e.lastSe
   else sys(Xd.n+' 진행 중. '+(e.sets-t.length)+'세트 남았다.');
 }
 greet();
-if(migrated) setTimeout(()=>overlay('DATA MERGED','두 전선 통합','철봉 수련장부와 링의 순례길 기록을 하나로 합쳤다.\n턱걸이 '+S.ex.pull.total+'회 · 링딥스 '+S.ex.ring.total+'회.\n주인공은 한 명, 전선은 둘.', heroPixel(levelOf(heroTotal()))),500);
+if(migrated) setTimeout(()=>overlay('DATA MERGED','두 전선 통합','철봉 수련장부와 링의 순례길 기록을 하나로 합쳤다.\n턱걸이 '+S.ex.pull.total+'회 · 링딥스 '+S.ex.ring.total+'회.\n주인공은 한 명, 전선은 둘.', heroPixel(levelOf(heroExp()))),500);
 else { const rk=EXK.find(k=>reinforced[k]); if(rk) setTimeout(()=>overlay('ENEMY REINFORCED','+'+reinforced[rk],EXD[rk].n+' 전선을 일주일 넘게 비운 사이 적이 병력을 보충했다. 오늘 다시 밀어낸다.', bossPixel(S.ex[rk].war.t+(rk==='ring'?100:0))),600); }
 
 })();
