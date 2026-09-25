@@ -1,4 +1,4 @@
-const CACHE='dash-v5';
+const CACHE='dash-v6';
 const CORE=["./pullup.html", "./pullup.webmanifest", "./pullup-icon-180.png", "./ring.html", "./ring.webmanifest", "./ring-icon-180.png", "./app.html", "./app.webmanifest", "./app-icon-180.png"];
 self.addEventListener('install',e=>{ e.waitUntil(caches.open(CACHE).then(async c=>{ for(const u of CORE){ try{ await c.add(u); }catch(err){} } self.skipWaiting(); })); });
 self.addEventListener('activate',e=>{ e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('dash-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())); });

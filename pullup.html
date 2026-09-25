@@ -195,6 +195,14 @@ td.r{text-align:right;font-family:"Press Start 2P";font-size:10px;color:var(--cy
 .exsw button.on{background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 0 0 3px #fff,4px 4px 0 3px #000}
 .exsw button.on .p8{color:#fff}
 .exsw button[data-ex=ring].on{background:linear-gradient(180deg,#e63946,#8f1d2c)}
+.exsw button[data-ex=squat].on{background:linear-gradient(180deg,#2f9d5b,#17613a)}
+.exsw button{font-size:15px;padding:10px 4px;min-width:0}
+.cal .c.sq{background:#2f9d5b !important}
+.wrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;padding:10px 12px;background:#0a0d1c;box-shadow:inset 0 0 0 2px var(--line);font-size:14px;color:var(--muted)}
+.wrow b{font-family:"Press Start 2P";font-size:16px;color:var(--gold);min-width:74px;text-align:center}
+.wbtn{width:40px;height:40px;background:var(--panel2);box-shadow:0 0 0 2px var(--line),3px 3px 0 2px #000;font-family:"Press Start 2P";font-size:14px;color:var(--gold)}
+.wrow select{font:inherit;font-size:13px;background:#0a0d1c;color:var(--ink);border:0;box-shadow:inset 0 0 0 2px var(--line);padding:6px}
+.bkarea{width:100%;min-height:90px;margin-top:8px;font-size:11px;background:#0a0d1c;color:var(--ink);border:0;box-shadow:inset 0 0 0 2px var(--line);padding:8px}
 .exsw small{display:none}
 .cal .c.ring{background:#b8384e !important}
 .cal .c.both{background:linear-gradient(135deg,var(--accent) 50%,#b8384e 50%) !important}
@@ -231,7 +239,7 @@ td.r{text-align:right;font-family:"Press Start 2P";font-size:10px;color:var(--cy
 
 <div class="wrap">
   <div class="sysbar"><span class="tag">SYSTEM</span><span class="cursor" id="sysMsg"></span></div>
-  <div class="exsw"><button data-ex="pull"><span class="p8">PULL-UP</span>턱걸이</button><button data-ex="ring"><span class="p8">RING DIPS</span>링딥스</button><small id="exNote"></small></div>
+  <div class="exsw"><button data-ex="pull"><span class="p8">PULL-UP</span>턱걸이</button><button data-ex="ring"><span class="p8">RING DIPS</span>링딥스</button><button data-ex="squat"><span class="p8">SQUAT</span>스쿼트</button><small id="exNote"></small></div>
 
   <div class="win">
     <div class="ttl"><b>STATUS</b><span>상태창</span><small id="stMeta"></small></div>
@@ -267,6 +275,7 @@ td.r{text-align:right;font-family:"Press Start 2P";font-size:10px;color:var(--cy
   <div class="win gold quest">
     <div class="ttl"><b>QUEST</b><span>일일 퀘스트</span><small id="todayLbl"></small></div>
     <div class="q"><div class="qt"><span id="qName">턱걸이</span> <em id="qTarget"></em>회 × <em id="qSets"></em>세트</div><div class="goal">목표 <input type="number" id="optTarget" min="1" max="60"> × <input type="number" id="optSets" min="1" max="10"></div></div>
+    <div class="wrow" id="wRow" hidden><span>덤벨</span><button class="wbtn" id="wDec">-</button><b id="wVal">12kg</b><button class="wbtn" id="wInc">+</button><span>단위</span><select id="wStep"><option value="1">1kg</option><option value="2">2kg</option><option value="2.5">2.5kg</option><option value="4">4kg</option><option value="5">5kg</option></select><small id="wHint" style="flex-basis:100%"></small></div>
     <div class="bar" style="--c:var(--gold)"><i id="goalFill"></i></div>
     <div class="entry">
       <button class="step l" id="dec">-</button>
@@ -347,6 +356,12 @@ td.r{text-align:right;font-family:"Press Start 2P";font-size:10px;color:var(--cy
     <div class="ttl"><b>WHY</b><span id="whyTtl">까닭</span></div>
     <div class="whygrid" id="whygrid"></div>
     <div class="caution" id="caution"></div>
+  </div>
+  <div class="win">
+    <div class="ttl"><b>BACKUP</b><span>기록 옮기기</span></div>
+    <div class="hint2" style="margin-top:0">다른 주소(깃허브판 ↔ 링크판)나 다른 기기로 기록을 옮길 때 쓴다. 한쪽에서 '기록 복사', 다른 쪽에서 붙여 넣고 '복원'.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="chip2" id="bkCopy">기록 복사</button><button class="chip2" id="bkOpen">붙여넣어 복원</button><button class="chip2" id="bkRun" hidden>복원 실행</button></div>
+    <textarea class="bkarea" id="bkArea" hidden></textarea>
   </div>
   <div class="sync" id="syncMsg">LOCAL SAVE</div>
 </div>
@@ -555,7 +570,25 @@ const EXD = {
   CAUTION:'<b>CAUTION</b> · 하단에서 어깨가 앞으로 말리면 그 깊이는 아직 네 것이 아니다. 팔꿈치가 몸 옆에서 뒤로 가게, 어깨는 귀에서 멀리. 통증이 있으면 깊이를 줄이고, 반복은 실패 2개 전에서 멈춘다. 근육보다 힘줄이 늦게 자란다.',
   HOW:[['서포트 홀드','링 위에서 팔을 다 펴고 버티기. 링이 몸 옆에 붙고 흔들리지 않을 때까지 10~20초 × 3. 이게 안 되면 딥스는 아직이다.'],['내리기','몸을 살짝 앞으로 기울이고 팔꿈치를 뒤로 보내며 어깨가 팔꿈치 높이까지. 3초. 어깨가 앞으로 말리면 그 위에서 멈춘다.'],['올리기','링을 몸 쪽으로 눌러 모으며 1초에 올라온다. 상단에서 팔 다 펴고, 가능하면 링을 바깥으로 돌린다(RTO).'],['호흡·템포','내릴 때 마시고 올릴 때 뱉는다. 3-1-1 템포가 기본.'],['안 될 때','밴드 보조 딥스, 네거티브만(올라갈 땐 발 사용) 5회 × 5세트, 평행봉 딥스로 먼저.'],['휴식·빈도','세트 간 2~3분. 턱걸이와 같은 날 해도 되고(당기기→밀기 순), 격일도 좋다.']] },
 };
-const EXK=['pull','ring'];
+EXD.squat={ n:'고블릿 스쿼트', en:'GOBLET SQUAT', key:'', target:10, sets:4, byWeight:true, weight:12,
+  TERR:[
+   {n:"훈련장 흙바닥",m:"허수아비 병사",b:"흙바닥의 교관",tile:"field",tip:"맨몸이나 가벼운 덤벨로 깊이부터. 엉덩이가 무릎 아래로."},
+   {n:"돌계단",m:"계단 파수병",b:"무릎 꿇린 자",tile:"mount",tip:"내려갈 때 3초. 바닥에서 1초 멈추고 올라온다."},
+   {n:"짐꾼의 길",m:"짐꾼 도적",b:"짐을 빼앗는 자",tile:"forest",tip:"덤벨을 가슴에 바짝. 팔꿈치는 아래를 향한다."},
+   {n:"진흙 늪",m:"늪의 손",b:"발목 잡는 늪",tile:"lake",tip:"발 전체로 바닥을 민다. 뒤꿈치가 뜨면 발목 가동성부터."},
+   {n:"대장간",m:"쇠망치 병사",b:"모루의 주인",tile:"lava",tip:"15회를 채우면 무게를 올리고 10회부터 다시."},
+   {n:"성문 앞",m:"방패 보병",b:"성문의 역사",tile:"castle",tip:"중간 세트는 1과 1/2 스쿼트로 자극을 바꾼다."},
+   {n:"설산 고개",m:"눈보라 척후",b:"고개의 거인",tile:"snow",tip:"덤벨이 한계면 템포(4초 하강)와 일시정지로 강도를 올린다."},
+   {n:"기둥의 전당",m:"석상 근위",b:"기둥을 받친 자",tile:"castle",tip:"불가리안 스플릿 스쿼트를 병행할 때."}],
+  RANKS:[[0,'E','맨몸부터'],[8,'D','덤벨을 든 자'],[12,'C','다리가 버티는 자'],[16,'B','대장간의 일꾼'],[20,'A','기둥 같은 다리'],[24,'S','성문을 받친 자']],
+  MILES:[{k:'s10',t:'한 세트 10회',f:s=>s.pr>=10},{k:'c100',t:'누적 100회',f:s=>s.total>=100},{k:'w12',t:'12kg로 8회 이상',f:s=>(s.prW||0)>=12},{k:'s15',t:'한 세트 15회',f:s=>s.pr>=15},{k:'w4',t:'4주 연속 출석',f:s=>streak(s)>=4},{k:'c500',t:'누적 500회',f:s=>s.total>=500},{k:'w16',t:'16kg로 8회 이상',f:s=>(s.prW||0)>=16},{k:'w20',t:'20kg로 8회 이상',f:s=>(s.prW||0)>=20},{k:'c1000',t:'누적 1,000회',f:s=>s.total>=1000},{k:'w24',t:'24kg로 8회 이상',f:s=>(s.prW||0)>=24}],
+  SAY:['세트 기록. 적 {d} 격퇴.','다리가 떨리면 제대로 한 거다. 오늘 {t}회.','전선이 {d}만큼 전진했다.','하체는 거짓말을 안 한다.','한 세트 더. 계단이 가벼워진다.'],
+  WHY:[['몸에서 가장 큰 근육을 쓴다','허벅지와 엉덩이는 몸 전체 근육의 절반 가까이다. 턱걸이·딥스로 상체만 하면 몸의 절반을 놔두는 셈이다.'],['고블릿이 가장 안전한 스쿼트다','무게를 가슴 앞에 들면 상체가 저절로 서고 허리 부담이 준다. 바벨 없이 혼자 하기에 가장 좋은 형태다.'],['앉아 있는 몸의 반대 동작','하루 종일 의자에 접혀 있던 고관절과 발목을 끝까지 쓰게 한다. 공부로 굳은 하체를 푸는 데도 좋다.'],['코어와 등도 같이 버틴다','앞에 든 무게를 버티느라 복부와 등 위쪽이 계속 일한다. 자세가 곧아진다.'],['무게 조절 덤벨과 궁합이 좋다','10회에서 시작해 15회를 채우면 무게를 한 칸 올리고 다시 10회부터(이중 점진). 앱이 알아서 안내한다.'],['평생 쓰는 동작','앉았다 일어나는 힘은 나이 들수록 중요해지는 능력이다. 지금 만든 다리가 오래 간다.']],
+  CAUTION:'<b>CAUTION</b> · 허리가 둥글게 말리면 그 깊이까지만 내려간다. 무릎은 발끝과 같은 방향으로, 안으로 모이지 않게. 덤벨은 몸에서 떨어지지 않게 가슴에 붙인다. 무릎이나 허리에 찌르는 통증이 있으면 멈추고 무게를 낮춘다. 조절식 덤벨은 핀·다이얼이 잠겼는지 매 세트 확인한다.',
+  HOW:[['잡기','덤벨을 세로로 세워 위쪽 원판 아래를 두 손바닥으로 받친다(잔을 들듯). 가슴에 바짝 붙이고 팔꿈치는 아래로.'],['서기','발은 어깨너비보다 조금 넓게, 발끝은 15~30도 바깥. 가슴을 열고 배에 힘.'],['내려가기','엉덩이를 뒤·아래로 보내며 2~3초에 걸쳐 앉는다. 팔꿈치가 무릎 안쪽을 스치는 깊이까지. 뒤꿈치는 바닥에.'],['올라오기','발 전체로 바닥을 밀어낸다. 무릎이 안으로 모이지 않게 바깥으로 민다. 위에서 엉덩이를 조인다.'],['숨','내려가며 들이쉬고, 가장 힘든 구간을 지나며 내쉰다.'],['휴식·빈도','세트 간 90초~2분. 주 2~3회, 턱걸이·딥스와 같은 날 해도 된다.']] };
+const EXK=['pull','ring','squat'];
+const exOff=k=>({pull:0,ring:100,squat:200}[k||S.cur]||0);
+const rankVal=(e,Xd)=>Xd.byWeight?(e.prW||0):e.pr;
 const ALLIES=[{lv:2,n:"견습병",r:"보병",p:2,e:"🪖"},{lv:4,n:"창병 소대",r:"보병",p:3,e:"🔱"},{lv:6,n:"궁수대",r:"원거리",p:4,e:"🏹"},{lv:9,n:"기마대",r:"돌격",p:5,e:"🐎"},{lv:12,n:"공병대",r:"공성",p:6,e:"⚒️"},{lv:16,n:"철갑대",r:"중장보병",p:8,e:"🛡️"},{lv:20,n:"근위대",r:"정예",p:10,e:"⚔️"},{lv:25,n:"노장군",r:"총사령",p:12,e:"🎖️"}];
 const LVL=40;
 const T_MIN = i => 15 + i*10, T_BOSS = i => 30 + i*25;
@@ -570,7 +603,7 @@ const titleOf = lv => { let t=TITLES[0][1]; TITLES.forEach(x=>{ if(lv>=x[0]) t=x
 
 // ---------- state ----------
 const KEY='ironring-v1';
-function freshEx(k){ const X=EXD[k]; return {total:0,pr:0,sessions:[],target:X.target,sets:X.sets,lastSession:'',bumpedDay:'',vow:{},miles:{},war:null}; }
+function freshEx(k){ const X=EXD[k]; return {weight:X.weight||0,prW:0,step:2,total:0,pr:0,sessions:[],target:X.target,sets:X.sets,lastSession:'',bumpedDay:'',vow:{},miles:{},war:null}; }
 function fromOld(o,k){ const e=freshEx(k); if(!o) return e; ['total','pr','sessions','target','sets','lastSession','bumpedDay','vow','miles'].forEach(f=>{ if(o[f]!==undefined&&o[f]!==null) e[f]=o[f]; }); e.sessions=e.sessions||[]; e.vow=e.vow||{}; e.miles=e.miles||{}; if(k==='pull'&&e.sets===4) e.sets=5; if(k==='ring'&&e.sets===4) e.sets=5; e.war=o.war&&o.war.conq?o.war:null; return e; }
 let S={cur:'pull', ex:{}, started:'', updatedAt:0};
 let migrated=false;
@@ -587,7 +620,7 @@ const gold = () => Math.max(0,heroExp()-(S.spent||0));
 let db=null, docRef=null, wT=null, applying=false;
 function persist(){ S.updatedAt=Date.now(); try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} if(docRef&&!applying){ clearTimeout(wT); wT=setTimeout(async()=>{ try{ await docRef.set(JSON.parse(JSON.stringify(S))); $('syncMsg').textContent='CLOUD SYNC OK'; }catch(e){ $('syncMsg').textContent='LOCAL SAVE (SYNC FAIL)'; } },600);} }
 function adopt(r){ if(!r.ex){ const n={cur:'pull',ex:{pull:fromOld(r,'pull'),ring:S.ex.ring||fromOld(window.__RING_SEED__||null,'ring')},started:r.started||S.started,updatedAt:r.updatedAt||0}; r=n; } S=Object.assign(S,r); EXK.forEach(k=>{ if(!S.ex[k]) S.ex[k]=freshEx(k); if(!S.ex[k].war) rebuildWar(S.ex[k]); }); }
-(async()=>{ try{ db=await (window.claude?.use?.('db')??Promise.resolve(null)); if(!db) return; docRef=db.doc('state/main'); const s=await docRef.get(); if(s.exists){ const r=s.data(); if((r.updatedAt||0)>(S.updatedAt||0)||!r.ex){ applying=true; adopt(r); try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} render(); applying=false; if(!r.ex) persist(); } else if((S.updatedAt||0)>(r.updatedAt||0)) persist(); } else persist(); $('syncMsg').textContent='CLOUD SYNC OK'; docRef.onSnapshot(sn=>{ if(!sn.exists||sn.metadata.hasPendingWrites) return; const r=sn.data(); if(r.ex&&(r.updatedAt||0)>(S.updatedAt||0)){ applying=true; adopt(r); render(); applying=false; } },()=>{}); }catch(e){} })();
+(async()=>{ try{ db=await (window.claude?.use?.('db')??Promise.resolve(null)); if(!db) return; let uid=null; try{ const u=await (window.claude?.use?.('user')??Promise.resolve(null)); uid=u?await u.id():null; }catch(e){} docRef=db.doc(uid?'data/users/'+uid+'/main':'state/main'); const s=await docRef.get(); if(s.exists){ const r=s.data(); if((r.updatedAt||0)>(S.updatedAt||0)||!r.ex){ applying=true; adopt(r); try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} render(); applying=false; if(!r.ex) persist(); } else if((S.updatedAt||0)>(r.updatedAt||0)) persist(); } else persist(); $('syncMsg').textContent='CLOUD SYNC OK'; docRef.onSnapshot(sn=>{ if(!sn.exists||sn.metadata.hasPendingWrites) return; const r=sn.data(); if(r.ex&&(r.updatedAt||0)>(S.updatedAt||0)){ applying=true; adopt(r); render(); applying=false; } },()=>{}); }catch(e){} })();
 
 // ---------- war ----------
 function freshWar(){ return {t:0,m:0,b:0,conq:[]}; }
@@ -609,27 +642,27 @@ function streak(e){ const weeks=new Set(e.sessions.map(x=>weekKey(x.d))); let st
 function checkMiles(e,Xd){ e.miles=e.miles||{}; const fresh=[]; Xd.MILES.forEach(m=>{ if(!e.miles[m.k]&&m.f(e)){ e.miles[m.k]=todayKey(); fresh.push(m); } }); return fresh; }
 function logSet(){
   const e=E(), Xd=X(), r=Math.max(1,reps), rec=todayRec(e);
-  const lvBefore=levelOf(heroExp()), rankBefore=rankOf(Xd,e.pr)[1];
-  rec.sets.push(r); rec.total+=r; e.total+=r; e.lastSession=todayKey(); e.sessions=e.sessions.slice(0,200);
+  const lvBefore=levelOf(heroExp()), rankBefore=rankOf(Xd,rankVal(e,Xd))[1];
+  rec.sets.push(r); if(Xd.byWeight){ rec.w=rec.w||[]; rec.w.push(e.weight||0); if(r>=8&&(e.weight||0)>(e.prW||0)) e.prW=e.weight; } rec.total+=r; e.total+=r; e.lastSession=todayKey(); e.sessions=e.sessions.slice(0,200);
   const isPR=r>e.pr; if(isPR) e.pr=r;
   const dmg=r+powerAt(lvBefore); const ev=applyDamage(e.war,dmg); warHit(dmg);
-  const lvAfter=levelOf(heroExp()), newAlly=alliesAt(lvAfter).length>alliesAt(lvBefore).length, rankAfter=rankOf(Xd,e.pr)[1];
-  let questDone=false; if(rec.sets.length>=e.sets && rec.sets.every(x=>x>=e.target) && e.bumpedDay!==rec.d){ e.target+=1; e.bumpedDay=rec.d; questDone=true; }
+  const lvAfter=levelOf(heroExp()), newAlly=alliesAt(lvAfter).length>alliesAt(lvBefore).length, rankAfter=rankOf(Xd,rankVal(e,Xd))[1];
+  let questDone=false; if(rec.sets.length>=e.sets && rec.sets.every(x=>x>=e.target) && e.bumpedDay!==rec.d){ if(Xd.byWeight&&e.target>=15){ e.weight=(e.weight||0)+(e.step||2); e.target=10; } else e.target+=1; e.bumpedDay=rec.d; questDone=true; }
   const fresh=checkMiles(e,Xd);
   const vowHit = e.vow&&e.vow.reps&&r>=e.vow.reps&&!e.vow.done; if(vowHit) e.vow.done=todayKey();
   persist();
   $('hero').classList.remove('flex'); void $('hero').offsetWidth; $('hero').classList.add('flex');
   const conq=ev.find(x=>x.type==='conquer'), bossUp=ev.find(x=>x.type==='boss');
   const queue=[];
-  if (rankAfter!==rankBefore) queue.push(['RANK UP', Xd.n+' '+rankAfter+' 등급', '한 세트 '+e.pr+'회. 「'+rankOf(Xd,e.pr)[2]+'」\n등급은 한 세트 최고 기록으로 정해진다.', heroPixel(lvAfter)]);
+  if (rankAfter!==rankBefore) queue.push(['RANK UP', Xd.n+' '+rankAfter+' 등급', (Xd.byWeight?e.prW+'kg로 8회 이상.':'한 세트 '+e.pr+'회.')+' 「'+rankOf(Xd,rankVal(e,Xd))[2]+'」\n등급은 '+(Xd.byWeight?'8회 이상 해낸 최고 무게':'한 세트 최고 기록')+'로 정해진다.', heroPixel(lvAfter)]);
   if (vowHit) queue.push(['VOW FULFILLED', e.vow.reps+'회 달성', (e.vow.name||'')+' — 적어 둔 대로 해냈다.\n'+(e.vow.why||'')+'\n새 서약을 적을 시간이다.', null]);
   if (lvAfter>lvBefore) queue.push(['LEVEL UP', 'LV.'+lvAfter, '칭호 · '+titleOf(lvAfter)+'\n몸 '+heroTotal()+' + 현생 '+((S.life&&S.life.exp)||0)+' EXP. 어제의 너보다 강하다.', heroPixel(lvAfter)]);
   if (newAlly){ const a=alliesAt(lvAfter).slice(-1)[0]; queue.push(['NEW ALLY', a.e+' '+a.n, a.r+' · 화력 +'+a.p+'\n이제 두 전선 모두에서 한 세트마다 '+powerAt(lvAfter)+'만큼 더 벤다.', null]); }
-  if (conq) queue.push(['TERRITORY CLEAR', terrOf(Xd,conq.T).n, '「'+terrOf(Xd,conq.T).b+'」을(를) 베고 땅을 얻었다.\n다음 던전: '+terrOf(Xd,conq.T+1).n, bossPixel(conq.T+(S.cur==='ring'?100:0),{hurt:true})]);
-  else if (bossUp) queue.push(['BOSS APPEARS', terrOf(Xd,bossUp.T).b, '졸병을 모두 밀어냈다. 이 땅의 군주가 직접 나섰다.\nHP '+T_BOSS(bossUp.T), bossPixel(bossUp.T+(S.cur==='ring'?100:0))]);
+  if (conq) queue.push(['TERRITORY CLEAR', terrOf(Xd,conq.T).n, '「'+terrOf(Xd,conq.T).b+'」을(를) 베고 땅을 얻었다.\n다음 던전: '+terrOf(Xd,conq.T+1).n, bossPixel(conq.T+exOff(),{hurt:true})]);
+  else if (bossUp) queue.push(['BOSS APPEARS', terrOf(Xd,bossUp.T).b, '졸병을 모두 밀어냈다. 이 땅의 군주가 직접 나섰다.\nHP '+T_BOSS(bossUp.T), bossPixel(bossUp.T+exOff())]);
   if (isPR && !queue.length) queue.push(['NEW RECORD', Xd.n+' '+r+'회', '지난 최고를 넘었다. 이 숫자가 내일의 첫 세트다.', null]);
   if (fresh.length && !queue.length) queue.push(['ACHIEVEMENT', fresh[0].t, '기록에 날짜가 찍혔다.', null]);
-  if (questDone && !queue.length) queue.push(['QUEST CLEAR', '내일은 '+e.target+'회', '전 세트를 채웠다. 목표가 한 개 올랐다.', null]);
+  if (questDone && !queue.length) queue.push(['QUEST CLEAR', Xd.byWeight?('다음은 '+e.weight+'kg × '+e.target+'회'):('내일은 '+e.target+'회'), Xd.byWeight&&e.target===10?'15회를 전 세트 채웠다. 무게를 한 칸 올리고 10회부터 다시 쌓는다.':'전 세트를 채웠다. 목표가 한 개 올랐다.', null]);
   if (queue.length){ if(queue.some(q=>['RANK UP','LEVEL UP','TERRITORY CLEAR'].includes(q[0]))) confetti(); runQueue(queue); }
   else { const m=Xd.SAY[Math.floor(Math.random()*Xd.SAY.length)]; sys(m.replace('{d}',dmg).replace('{t}',rec.total).replace('{r}',r)); }
   render();
@@ -699,28 +732,35 @@ $('fcBtn').onclick=()=>{ ensureLife(); const f=S.life.fc;
   if(done){ const d=lifeDay(); d.focus=(d.focus||0)+1; d.focusMin=(d.focusMin||0)+f.mins; $('fcHint').textContent='시작을 누르고 폰을 금욕상자에 넣는다. 돌아와서 보상을 받는다.'; if(d.focus<=6) gainLife(f.mins>=50?25:10,f.mins+'분 집중 완료.'); else { persist(); sys('오늘 집중 보상 한도(6회)는 찼다.'); render(); } }
   else { persist(); sys('집중을 중단했다. 다음엔 25분부터.'); $('fcHint').textContent='시작을 누르고 폰을 금욕상자에 넣는다. 돌아와서 보상을 받는다.'; render(); } };
 
+$('wDec').onclick=()=>{ const e=E(); e.weight=Math.max(0,Math.round(((e.weight||0)-(e.step||2))*10)/10); persist(); render(); };
+$('wInc').onclick=()=>{ const e=E(); e.weight=Math.round(((e.weight||0)+(e.step||2))*10)/10; persist(); render(); };
+$('wStep').onchange=ev=>{ E().step=+ev.target.value; persist(); render(); };
+$('bkCopy').onclick=()=>{ const t=JSON.stringify(S), a=$('bkArea'); const fb=()=>{ a.hidden=false; a.value=t; a.select(); sys('아래 글을 전부 복사한다.'); }; if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(()=>sys('기록을 복사했다. 옮길 곳에서 붙여 넣는다.'),fb); else fb(); };
+$('bkOpen').onclick=()=>{ const a=$('bkArea'); a.hidden=false; a.value=''; a.placeholder='복사한 기록을 여기에 붙여 넣고 [복원 실행]'; $('bkRun').hidden=false; };
+$('bkRun').onclick=()=>{ try{ const o=JSON.parse($('bkArea').value); if(!o||(!o.ex&&!o.sessions)) throw 0; adopt(o); ensureLife(); $('bkArea').hidden=true; $('bkRun').hidden=true; persist(); render(); sys('기록을 복원했다.'); }catch(e){ sys('기록 형식이 아니다. 복사한 글 전체를 그대로 붙여 넣는다.'); } };
+
 let ovQueue=[];
 function runQueue(q){ ovQueue=q.slice(); nextOv(); }
 function nextOv(){ const q=ovQueue.shift(); if(!q){ $('ov').classList.remove('on'); return; } overlay(...q); }
 function overlay(e,t,b,port){ $('ovEye').textContent=e; $('ovTitle').textContent=t; $('ovBody').textContent=b; $('ovPort').innerHTML=port||''; $('ovPort').hidden=!port; $('ov').classList.add('on'); sys('['+e+'] '+t); }
 $('ovOk').onclick=()=>{ $('ov').classList.remove('on'); setTimeout(nextOv,150); };
-function undo(){ const e=E(); const rec=e.sessions.find(s=>s.d===todayKey()); if(!rec||!rec.sets.length) return; const r=rec.sets.pop(); rec.total-=r; e.total=Math.max(0,e.total-r); if(!rec.sets.length) e.sessions=e.sessions.filter(s=>s!==rec); e.pr=Math.max(0,...e.sessions.flatMap(s=>s.sets)); rebuildWar(e); persist(); sys('마지막 세트 취소. 전황을 되감았다.'); render(); }
+function undo(){ const e=E(); const rec=e.sessions.find(s=>s.d===todayKey()); if(!rec||!rec.sets.length) return; const r=rec.sets.pop(); if(rec.w) rec.w.pop(); rec.total-=r; e.total=Math.max(0,e.total-r); if(!rec.sets.length) e.sessions=e.sessions.filter(s=>s!==rec); e.pr=Math.max(0,...e.sessions.flatMap(s=>s.sets)); rebuildWar(e); persist(); sys('마지막 세트 취소. 전황을 되감았다.'); render(); }
 function warHit(r){ const el=$('portrait'); el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit'); const rect=el.getBoundingClientRect(); const d=document.createElement('div'); d.className='dmg'; d.textContent='-'+r; d.style.left=(rect.left+rect.width/2-18)+'px'; d.style.top=rect.top+'px'; document.body.appendChild(d); setTimeout(()=>d.remove(),1100); }
 function confetti(){ const cols=['#5fe3ff','#ffd23f','#ff4b5c','#4be08a','#b07cff']; for(let i=0;i<80;i++){ const c=document.createElement('div'); c.className='confetti'; c.style.left=Math.random()*100+'vw'; c.style.background=cols[i%cols.length]; c.style.animationDelay=(Math.random()*.6)+'s'; document.body.appendChild(c); setTimeout(()=>c.remove(),2600);} }
 
 // ---------- render ----------
 function render(){
-  const e=E(), Xd=X(), lv=levelOf(heroExp()), rk=rankOf(Xd,e.pr), t=todaySets(e), sum=t.reduce((a,b)=>a+b,0);
+  const e=E(), Xd=X(), lv=levelOf(heroExp()), rk=rankOf(Xd,rankVal(e,Xd)), t=todaySets(e), sum=t.reduce((a,b)=>a+b,0);
   document.querySelectorAll('.exsw button').forEach(b=>b.classList.toggle('on',b.dataset.ex===S.cur));
-  const other=S.cur==='pull'?'ring':'pull'; const ot=todaySets(S.ex[other]).length; $('exNote').textContent=ot?EXD[other].n+' 오늘 '+ot+'세트 완료':EXD[other].n+' 오늘 미수행';
+  $('exNote').textContent=EXK.filter(k=>k!==S.cur).map(k=>EXD[k].n+' '+(todaySets(S.ex[k]).length?todaySets(S.ex[k]).length+'세트':'미수행')).join(' · ');
   $('reps').textContent=reps;
   $('hero').innerHTML=heroPixel(lv)+'<span class="rank">'+rk[1]+'</span>';
   const nm=(S.ex.pull.vow&&S.ex.pull.vow.name)||(S.ex.ring.vow&&S.ex.ring.vow.name)||'이름 없는 수련자';
   $('heroName').textContent=nm; $('heroLv').textContent='LV.'+lv; $('heroTitle').textContent='「'+titleOf(lv)+'」 · '+Xd.n+' '+rk[1]+'급 '+rk[2];
-  const inLv=heroExp()-(lv-1)*LVL; $('expTxt').textContent=inLv+'/'+LVL+' (턱걸이 '+S.ex.pull.total+' + 링 '+S.ex.ring.total+' + 현생 '+((S.life&&S.life.exp)||0)+')'; $('expFill').style.width=(inLv/LVL*100)+'%';
+  const inLv=heroExp()-(lv-1)*LVL; $('expTxt').textContent=inLv+'/'+LVL+' (턱걸이 '+S.ex.pull.total+' + 링 '+S.ex.ring.total+' + 스쿼트 '+S.ex.squat.total+' + 현생 '+((S.life&&S.life.exp)||0)+')'; $('expFill').style.width=(inLv/LVL*100)+'%';
   $('stMeta').textContent='NO.'+S.started.replace(/-/g,'');
   $('lblTotal').textContent=Xd.n+' · 누적'; $('lblPR').textContent=Xd.n+' · 세트 최고';
-  $('sTotal').textContent=e.total; $('sPR').textContent=e.pr; $('sStreak').textContent=streak(e); $('sTerr').textContent=S.ex.pull.war.conq.length+S.ex.ring.war.conq.length;
+  $('sTotal').textContent=e.total; $('sPR').textContent=Xd.byWeight?(e.prW||0)+'kg':e.pr; if(Xd.byWeight) $('lblPR').textContent='최고 무게 · 8회 이상'; $('wRow').hidden=!Xd.byWeight; if(Xd.byWeight){ $('wVal').textContent=(e.weight||0)+'kg'; $('wStep').value=String(e.step||2); $('wHint').textContent='10회로 시작 → 전 세트 15회를 채우면 앱이 무게를 한 칸('+(e.step||2)+'kg) 올리고 다시 10회부터. 0kg은 맨몸.'; } $('sStreak').textContent=streak(e); $('sTerr').textContent=EXK.reduce((a,k)=>a+S.ex[k].war.conq.length,0);
   $('qName').textContent=Xd.n; $('qTarget').textContent=e.target; $('qSets').textContent=e.sets; $('optTarget').value=e.target; $('optSets').value=e.sets;
   $('todayLbl').textContent=t.length?t.length+'세트 · '+sum+'회':'미수행';
   const goal=e.target*e.sets; $('goalFill').style.width=Math.min(100,sum/goal*100)+'%';
@@ -735,7 +775,7 @@ function render(){
 }
 function flagSVG(){ return px(["k.......","kwwwww..","kwrrrww.","kwrrrww.","kwwwww..","k.......","k.......","k......."],{k:'#3b2a20',w:'#ffffff',r:'#ff4b5c'}); }
 function renderWar(){
-  const e=E(), Xd=X(), w=e.war, lv=levelOf(heroExp()), al=alliesAt(lv), pw=powerAt(lv), nx=nextAlly(lv), off=S.cur==='ring'?100:0;
+  const e=E(), Xd=X(), w=e.war, lv=levelOf(heroExp()), al=alliesAt(lv), pw=powerAt(lv), nx=nextAlly(lv), off=exOff();
   const cur=terrOf(Xd,w.t), mm=T_MIN(w.t), bh=T_BOSS(w.t), bossPhase=w.m>=mm;
   $('warLbl').textContent=Xd.en+' · TERRITORY '+w.conq.length+'/'+Xd.TERR.length;
   const total=Math.max(Xd.TERR.length,w.t+1); let html='';
@@ -763,7 +803,7 @@ function renderGrowth(){
   const weeks=[]; const now=new Date(); for(let i=7;i>=0;i--){ const d=new Date(now); d.setDate(d.getDate()-i*7); const k=weekKey(d); const ss=e.sessions.filter(s=>weekKey(s.d)===k); weeks.push({k, tot:ss.reduce((a,s)=>a+s.total,0), pr:Math.max(0,...ss.flatMap(s=>s.sets))}); }
   const maxT=Math.max(10,...weeks.map(w=>w.tot)), maxP=Math.max(5,...weeks.map(w=>w.pr)); const pad=28, bw=(W-pad*2)/8;
   ctx.fillStyle='#1c2447'; [0.25,0.5,0.75].forEach(f=>{ ctx.fillRect(pad,Math.round(H-20-(H-40)*f),W-pad*2,2); });
-  weeks.forEach((w,i)=>{ const x=Math.round(pad+i*bw+bw*0.2), h=Math.round((H-40)*w.tot/maxT/6)*6; ctx.fillStyle=S.cur==='ring'?'#b8384e':'#3557d8'; ctx.fillRect(x,H-20-h,Math.round(bw*0.6),h); ctx.fillStyle=S.cur==='ring'?'#ff9fb0':'#5fe3ff'; for(let yy=H-20-h;yy<H-20;yy+=6) ctx.fillRect(x,yy,Math.round(bw*0.6),2); ctx.fillStyle='#a9b3d6'; ctx.font='9px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText(w.tot||'', x+bw*0.3, H-24-h); ctx.fillText(w.k.slice(5), x+bw*0.3, H-6); });
+  weeks.forEach((w,i)=>{ const x=Math.round(pad+i*bw+bw*0.2), h=Math.round((H-40)*w.tot/maxT/6)*6; ctx.fillStyle=S.cur==='ring'?'#b8384e':S.cur==='squat'?'#2f9d5b':'#3557d8'; ctx.fillRect(x,H-20-h,Math.round(bw*0.6),h); ctx.fillStyle=S.cur==='ring'?'#ff9fb0':S.cur==='squat'?'#9ff0bf':'#5fe3ff'; for(let yy=H-20-h;yy<H-20;yy+=6) ctx.fillRect(x,yy,Math.round(bw*0.6),2); ctx.fillStyle='#a9b3d6'; ctx.font='9px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText(w.tot||'', x+bw*0.3, H-24-h); ctx.fillText(w.k.slice(5), x+bw*0.3, H-6); });
   weeks.forEach((w,i)=>{ if(!w.pr) return; const x=Math.round(pad+i*bw+bw*0.5), y=Math.round(H-20-(H-40)*w.pr/maxP); ctx.fillStyle='#ffd23f'; ctx.fillRect(x-4,y-4,8,8); if(i&&weeks[i-1].pr){ const px0=Math.round(pad+(i-1)*bw+bw*0.5), py0=Math.round(H-20-(H-40)*weeks[i-1].pr/maxP); const steps=8; for(let s=0;s<=steps;s++){ ctx.fillRect(Math.round(px0+(x-px0)*s/steps)-1, Math.round(py0+(y-py0)*s/steps)-1, 3,3); } } });
   ctx.fillStyle='#a9b3d6'; ctx.textAlign='left'; ctx.font='8px "Press Start 2P"'; ctx.fillText(X().en+' WEEKLY', pad, 12); ctx.fillStyle='#ffd23f'; ctx.fillText('SET MAX', pad+150, 12);
   const cur=weeks[7], prev=weeks[6], d1=cur.tot-prev.tot, d2=cur.pr-prev.pr;
@@ -780,11 +820,11 @@ function renderMot(){
     P.innerHTML=line+'<div class="bar" style="--c:var(--gold);margin-top:8px"><i style="width:'+pct+'%"></i></div>'; }
   else P.innerHTML='목표 횟수와 기한을 적으면 남은 거리와 속도를 계산해 준다.';
   e.miles=e.miles||{}; let nm=false; $('miles').innerHTML=Xd.MILES.map(m=>{ const on=!!e.miles[m.k]; const next=!on&&!nm; if(next) nm=true; return `<div class="mi ${on?'on':''} ${next?'next':''}"><span class="box">${on?'✓':''}</span><span class="t">${m.t}</span><span class="d">${on?e.miles[m.k].slice(2):(next?'NEXT':'')}</span></div>`; }).join('');
-  const dp=new Set(S.ex.pull.sessions.map(s=>s.d)), dr=new Set(S.ex.ring.sessions.map(s=>s.d)); const today=new Date(); const start=new Date(today); start.setDate(today.getDate()-((today.getDay()+6)%7)-28);
-  let html=['M','T','W','T','F','S','S'].map(d=>'<div class="h">'+d+'</div>').join(''); for(let i=0;i<35;i++){ const d=new Date(start); d.setDate(start.getDate()+i); const k=fmtK(d); const p=dp.has(k), r=dr.has(k); html+=`<div class="c ${p&&r?'on both':p?'on':r?'on ring':''} ${k===todayKey()?'today':''} ${d>today?'future':''}">${d.getDate()}</div>`; } $('cal').innerHTML=html;
+  const dp=new Set(S.ex.pull.sessions.map(s=>s.d)), dr=new Set(S.ex.ring.sessions.map(s=>s.d)), dq=new Set(S.ex.squat.sessions.map(s=>s.d)); const today=new Date(); const start=new Date(today); start.setDate(today.getDate()-((today.getDay()+6)%7)-28);
+  let html=['M','T','W','T','F','S','S'].map(d=>'<div class="h">'+d+'</div>').join(''); for(let i=0;i<35;i++){ const d=new Date(start); d.setDate(start.getDate()+i); const k=fmtK(d); const p=dp.has(k), r=dr.has(k), q=dq.has(k); html+=`<div class="c ${(p+r+q)>=2?'on both':p?'on':r?'on ring':q?'on sq':''} ${k===todayKey()?'today':''} ${d>today?'future':''}">${d.getDate()}</div>`; } $('cal').innerHTML=html;
 }
 ['vowName','vowDate','vowReps','vowWhy'].forEach(id=>$(id).addEventListener('change',ev=>{ const e=E(); e.vow=e.vow||{}; const k=id.slice(3).toLowerCase(); e.vow[k]= id==='vowReps'?(parseInt(ev.target.value)||''):ev.target.value.trim(); if(id==='vowReps'||id==='vowDate') e.vow.done=''; persist(); render(); }));
-function renderHist(){ const e=E(); $('hist').innerHTML=e.sessions.length?e.sessions.slice(0,40).map(s=>`<tr><td class="p8" style="font-size:9px">${s.d.slice(5)}</td><td style="color:var(--muted)">${s.sets.join(' · ')}</td><td class="r">${s.total}</td></tr>`).join(''):'<tr><td colspan="3" class="empty">첫 기록을 기다리는 중.</td></tr>'; }
+function renderHist(){ const e=E(); $('hist').innerHTML=e.sessions.length?e.sessions.slice(0,40).map(s=>`<tr><td class="p8" style="font-size:9px">${s.d.slice(5)}</td><td style="color:var(--muted)">${s.sets.map((r,i)=>s.w&&s.w[i]?s.w[i]+'kg×'+r:r).join(' · ')}</td><td class="r">${s.total}</td></tr>`).join(''):'<tr><td colspan="3" class="empty">첫 기록을 기다리는 중.</td></tr>'; }
 
 // ---------- controls ----------
 document.querySelectorAll('.exsw button').forEach(b=>b.onclick=()=>{ if(S.cur===b.dataset.ex) return; S.cur=b.dataset.ex; reps=E().target; persist(); render(); greet(); });
@@ -804,7 +844,7 @@ function greet(){ const e=E(), Xd=X(); const t=todaySets(e); const idle=e.lastSe
 }
 greet();
 if(migrated) setTimeout(()=>overlay('DATA MERGED','두 전선 통합','철봉 수련장부와 링의 순례길 기록을 하나로 합쳤다.\n턱걸이 '+S.ex.pull.total+'회 · 링딥스 '+S.ex.ring.total+'회.\n주인공은 한 명, 전선은 둘.', heroPixel(levelOf(heroExp()))),500);
-else { const rk=EXK.find(k=>reinforced[k]); if(rk) setTimeout(()=>overlay('ENEMY REINFORCED','+'+reinforced[rk],EXD[rk].n+' 전선을 일주일 넘게 비운 사이 적이 병력을 보충했다. 오늘 다시 밀어낸다.', bossPixel(S.ex[rk].war.t+(rk==='ring'?100:0))),600); }
+else { const rk=EXK.find(k=>reinforced[k]); if(rk) setTimeout(()=>overlay('ENEMY REINFORCED','+'+reinforced[rk],EXD[rk].n+' 전선을 일주일 넘게 비운 사이 적이 병력을 보충했다. 오늘 다시 밀어낸다.', bossPixel(S.ex[rk].war.t+exOff(rk))),600); }
 
 })();
 </script>
